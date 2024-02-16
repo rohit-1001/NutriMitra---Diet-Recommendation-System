@@ -14,11 +14,22 @@ import Blogs from './pages/User/Blogs';
 import VideoConference from './pages/User/VideoConference';
 import NotFound from "./components/NotFound"
 import Login from './pages/Visitor/Login';
+import SelectRole from './components/SelectRole';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   const [role, setRole] = useState('visitor')
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role");
+    if(token){
+      setRole(role);
+    }
+    else{
+      setRole("visitor");
+    }
+  }, [])
   return (
     <>
       <ToastContainer />
@@ -58,6 +69,15 @@ function App() {
           </Routes>
         </>
       )}
+      {
+        role === 'notset' && (
+          <>
+            <Routes>
+              <Route exact path="/" element={<SelectRole />} />
+            </Routes>
+          </>
+        )
+      }
       
       {/* <Routes>
         <Route path="/" element={<Home />} />
