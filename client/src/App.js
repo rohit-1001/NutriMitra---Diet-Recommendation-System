@@ -13,6 +13,7 @@ import Recipes from './pages/User/Recipes';
 import Blogs from './pages/User/Blogs';
 import VideoConference from './pages/User/VideoConference';
 import NotFound from "./components/NotFound"
+import Login from './pages/Visitor/Login';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -28,6 +29,7 @@ function App() {
             <Route exact path="/" element={<Home />} />
             <Route exact path="/home" element={<Home />} />
             <Route path="/about" element={<About />} />
+            <Route path="/login" element={<Login />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </>
