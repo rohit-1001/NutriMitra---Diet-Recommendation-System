@@ -40,8 +40,49 @@ const SelectRole = (props) => {
     </Box>
   );
 
+  const logout = async () => {
+    const confirmLogout = window.confirm("Are you sure, you want to log out?");
+    if (confirmLogout) {
+      try {
+        localStorage.removeItem("token");
+        localStorage.setItem("role", "visitor");
+        setRole("visitor");
+        navigate("/");
+      } catch (error) {
+        if (error.response) {
+          toast.error(error.response.data.error);
+        } else {
+          toast.error("Some error occured");
+        }
+      }
+    }
+  }
+
   return (
     <>
+      <div>
+        <Button
+          variant="contained"
+          sx={
+            {
+              backgroundColor: "#3b8a51",
+              ":hover": {
+                backgroundColor: "#34a43c",
+                transform: "scale(1.02)",
+                transition: ".2s ease-out",
+              },
+            }
+          }
+          style={{
+            float: "right",
+            marginTop: "20px",
+            marginRight: "20px",
+          }}
+          onClick={() => logout()}
+          >
+          Logout
+        </Button>
+      </div>
       <div
         style={{
           display: "flex",
@@ -59,7 +100,9 @@ const SelectRole = (props) => {
             marginBottom: "20px",
           }}
         >
-          <span style={{ fontSize: "35px", color: "#158344" }}>Select your Role</span>
+          <span style={{ fontSize: "35px", color: "#158344" }}>
+            Select your Role
+          </span>
         </div>
         <div
           style={{
@@ -79,18 +122,23 @@ const SelectRole = (props) => {
                 transform: "scale(1.02)",
                 backgroundColor: "#edf3eca6",
               },
+              cursor: "pointer",
             }}
             onClick={() => submitRole("user")}
-            >
+          >
             <CardContent>
               <Typography
                 sx={{ fontSize: 18 }}
                 color="text.secondary"
                 gutterBottom
-                >
+              >
                 Are you a
               </Typography>
-              <Typography variant="h4" component="div" style={{color: "#296237"}}>
+              <Typography
+                variant="h4"
+                component="div"
+                style={{ color: "#296237" }}
+              >
                 Beneficiary
               </Typography>
               <Typography sx={{ mb: 1.5 }} color="text.secondary">
@@ -115,6 +163,7 @@ const SelectRole = (props) => {
                 transform: "scale(1.02)",
                 backgroundColor: "#edf3eca6",
               },
+              cursor: "pointer",
             }}
             onClick={() => submitRole("user")}
           >
@@ -126,7 +175,11 @@ const SelectRole = (props) => {
               >
                 Are you an
               </Typography>
-              <Typography variant="h4" component="div" style={{color: "#296237"}}>
+              <Typography
+                variant="h4"
+                component="div"
+                style={{ color: "#296237" }}
+              >
                 Expert
               </Typography>
               <Typography sx={{ mb: 1.5 }} color="text.secondary">
