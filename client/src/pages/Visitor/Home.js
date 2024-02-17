@@ -1,19 +1,19 @@
 import React from 'react'
 import "./HomeStyles.css"
-import rightsecimg from "../../assets/homepage/hometrial2.png"
-import verficiation from "../../assets/homepage/id-removebg-preview.png"
-import results from "../../assets/homepage/online-exam.svg"
-import createexam from "../../assets/homepage/hometrial4.avif"
+import rightsecimg from "../../assets/homepage/rightsecimg.jpg"
+import verficiation from "../../assets/homepage/verification.jpg"
+import results from "../../assets/homepage/results.webp"
+import createexam from "../../assets/homepage/createexam.jpg"
 import homeimg1 from "../../assets/homepage/homeimg1.png"
 import testi1 from "../../assets/homepage/testi1.jpg"
 import testi2 from "../../assets/homepage/testi2.jpg"
 import testi3 from "../../assets/homepage/testi3.jpg"
 import Footer from '../../components/Footer'
 import { useEffect } from 'react'
-import {Fade} from 'react-awesome-reveal';
-import {Zoom} from 'react-awesome-reveal';
+import { Fade } from 'react-awesome-reveal';
+import { Zoom } from 'react-awesome-reveal';
 // import Flip from 'react-awesome-reveal/Flip';
-import {Slide} from 'react-awesome-reveal';
+import { Slide } from 'react-awesome-reveal';
 
 const Home = () => {
   useEffect(() => {
@@ -29,13 +29,13 @@ const Home = () => {
               // border: "2px solid blue",
               padding: "1em 0 ",
               lineHeight: "2rem"
-            }}>Efficient Inventory Management at Your Fingertips</h1>
+            }}>Efficient Diet Management at Your Fingertips</h1>
             <div className="seewhy123" style={{
               // border: "2px solid red",
               fontSize: "1.3rem",
               padding: "0.5em 0"
-            }}>Discover why businesses prefer Sangrah over other inventory management solutions.</div>
-            <div className="seewhyinfo123">"Sangrah is my go-to inventory management platform. It allows me to streamline and optimize my inventory processes with ease, free from any hiccups. Sangrah's user-friendly interface simplifies the inventory management process, making it the ultimate choice for my business. Our company relies on Sangrah for all our inventory needs due to its efficiency and round-the-clock support."</div>
+            }}>Discover why individuals choose our diet management system over other solutions.</div>
+            <div className="seewhyinfo123">"Our diet management platform is my go-to choice for maintaining a healthy lifestyle. It allows me to streamline and optimize my dietary habits with ease, free from any complications. The user-friendly interface simplifies the process of managing my diet, making it the ultimate tool for my health journey. I rely on this platform for all my dietary needs due to its efficiency and support."</div>
           </div>
         </Fade>
         <Fade bottom>
@@ -54,22 +54,23 @@ const Home = () => {
       </div>
       <div className="outerhead11">
         <Zoom>
-          <div id='heading111'>Efficient Inventory Management</div>
+          <div id='heading111'>Efficient Diet Management</div>
         </Zoom>
       </div>
       <div className="sec2111">
         <div className="sec2div1222">
           <Fade left>
             <div className="left123">
-              <h3>Manage Inventory</h3>
+              <h3>Manage Your Diet</h3>
               <div className="leftinfo123">
                 <ul>
-                  <li>Efficiently organize and track your inventory using our intuitive management tools.</li>
-                  <li>Add and categorize your products, set stock levels, and keep an eye on restocking needs.</li>
-                  <li>Generate reports to analyze inventory trends and make informed business decisions.</li>
+                  <li>Efficiently organize and track your dietary intake using our intuitive management tools.</li>
+                  <li>Add and categorize your food items, set consumption goals, and monitor nutritional needs.</li>
+                  <li>Generate reports to analyze dietary trends and make informed decisions for a healthier lifestyle.</li>
                 </ul>
               </div>
             </div>
+
           </Fade>
           <Fade right>
             <div className="right123">
@@ -87,28 +88,31 @@ const Home = () => {
           </Fade>
           <Fade right>
             <div className="left123">
-              <h3>Verify Inventory and Begin Management</h3>
+              <h3>Verify Dietary Intake and Begin Management</h3>
               <div className="leftinfo123">
                 <ul>
-                  <li>Efficiently verify your inventory within 60 seconds.</li>
-                  <li>Access 24/7/365 customer support for any assistance.</li>
-                  <li>Utilize advanced inventory management software.</li>
+                  <li>Efficiently verify your dietary intake within 60 seconds.</li>
+                  <li>Access 24/7/365 customer support for any assistance on your health journey.</li>
+                  <li>Utilize advanced dietary management software for enhanced results.</li>
                 </ul>
               </div>
             </div>
+
           </Fade>
         </div>
         <div className="sec2div1222">
           <Fade left>
             <div className="left123">
-              <h3>Review  Updates</h3>
+              <h3>Stay Updated</h3>
               <div className="leftinfo123">
                 <ul>
-                  <li>Login to access your inventory updates on our platform.</li>
-                  <li>Check stock levels and receive feedback or notifications.</li>
-                  <li>Use these updates to guide your future inventory management and achieve your business goals.</li></ul>
+                  <li>Login to access the latest dietary updates on our platform.</li>
+                  <li>Monitor your nutritional levels and receive feedback or notifications.</li>
+                  <li>Leverage these updates to shape your future dietary management and reach your health goals.</li>
+                </ul>
               </div>
             </div>
+
           </Fade>
           <Fade right>
             <div className="right123">
@@ -127,13 +131,13 @@ const Home = () => {
             <div className="testimonial-box999">
               <div className="testimonial123">
                 <i className="fas123 fa-quote-right"></i>
-                <span className="testimonial-text123">"Efficient inventory management has been a game-changer for our business. A partnership with Sangrah has been one of our best decisions."</span>
+                <span className="testimonial-text123">"Efficient diet management has transformed our health journey. Choosing NutriMitra was one of our best decisions."</span>
                 <div className="testimonial-user123">
                   <img src={testi1} alt="user-img" className="user-img123" />
                   <div className="user-info123">
                     <span className="user-name123">Brian Marchman</span>
                     <div className="user-job-details123">
-                      <span className="user-job">Business Owner</span>
+                      <span className="user-job">Health Enthusiast</span>
                     </div>
                   </div>
                 </div>
@@ -141,35 +145,35 @@ const Home = () => {
             </div>
           </div>
 
-        <div className="container1111">
-          <div className="testimonial-box999">
-            <div className="testimonial123">
-              <i className="fas123 fa-quote-right"></i>
-              <span className="testimonial-text123">"Revolutionizing our operations, Sangrah's inventory management has redefined success for our company. A trusted ally, they've unlocked new horizons for us. Our growth story is incomplete without their invaluable support."</span>
-              <div className="testimonial-user123">
-                <img src={testi2} alt="user-img" className="user-img123" />
-                <div className="user-info123">
-                  <span className="user-name123">Brian Marchman</span>
-                  <div className="user-job-details123">
-                    <span className="user-job">Business Owner</span>
+          <div className="container1111">
+            <div className="testimonial-box999">
+              <div className="testimonial123">
+                <i className="fas123 fa-quote-right"></i>
+                <span className="testimonial-text123">"Revolutionizing our lifestyle, NutriMitra's diet management has redefined health for our family. A trusted ally, they've guided us to new horizons."</span>
+                <div className="testimonial-user123">
+                  <img src={testi2} alt="user-img" className="user-img123" />
+                  <div className="user-info123">
+                    <span className="user-name123">Brian Marchman</span>
+                    <div className="user-job-details123">
+                      <span className="user-job">Health Advocate</span>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
           <div className="container1111">
             <div className="testimonial-box999">
               <div className="testimonial123">
                 <i className="fas123 fa-quote-right"></i>
-                <span className="testimonial-text123">"The transformation we've witnessed with Sangrah's inventory management is nothing short of remarkable. Their partnership is a strategic asset, propelling our business forward. In the journey of success, they've been our steadfast companion."</span>
+                <span className="testimonial-text123">"The transformation we've experienced with NutriMitra's diet management is remarkable. Their guidance is a strategic asset, propelling our health journey."</span>
                 <div className="testimonial-user123">
                   <img src={testi3} alt="user-img" className="user-img123" />
                   <div className="user-info123">
                     <span className="user-name123">Brian Marchman</span>
                     <div className="user-job-details123">
-                      <span className="user-job">Business Owner</span>
+                      <span className="user-job">Wellness Advocate</span>
                     </div>
                   </div>
                 </div>
@@ -178,6 +182,7 @@ const Home = () => {
           </div>
         </div>
       </Slide>
+
       <Footer />
     </>
   )
