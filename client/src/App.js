@@ -17,18 +17,45 @@ import Login from './pages/Visitor/Login';
 import SelectRole from './components/SelectRole';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import axios from 'axios';
 
 function App() {
   const [role, setRole] = useState('visitor')
+  const verifyToken = async(token) => {
+    try {
+      const res = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/verifyToken`, {
+        headers: {
+          'Authorization': 'Bearer ' + token,
+        }
+      });
+      if(res.status === 200){
+        if(res.data.msg === "verified"){
+          return true;
+        }
+        else{
+          return false;
+        }
+      }
+    } catch (error) {
+      return false;
+    }
+  }
   useEffect(() => {
     const token = localStorage.getItem("token");
     const role = localStorage.getItem("role");
     if(token){
-      setRole(role);
+      const verify = verifyToken(token);
+      if(verify){
+        setRole(role);
+      }
+      else{
+        setRole("visitor");
+      }
     }
     else{
       setRole("visitor");
     }
+    console.log(role)
   }, [])
   return (
     <>
@@ -40,7 +67,7 @@ function App() {
             <Route exact path="/" element={<Home />} />
             <Route exact path="/home" element={<Home />} />
             <Route path="/about" element={<About />} />
-            <Route path="/login" element={<Login />} />
+            <Route path="/login" element={<Login details={{role, setRole}}/>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </>
@@ -73,7 +100,7 @@ function App() {
         role === 'notset' && (
           <>
             <Routes>
-              <Route exact path="/" element={<SelectRole />} />
+              <Route exact path="/" element={<SelectRole details={{role, setRole}}/>} />
             </Routes>
           </>
         )

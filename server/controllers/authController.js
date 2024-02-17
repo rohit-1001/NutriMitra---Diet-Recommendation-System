@@ -53,4 +53,34 @@ const signin = async(req, res) => {
     }
 }
 
-module.exports = { signup, signin };
+const verifyToken = async(req, res) => {
+    try {
+        const token = req.headers.authorization.split(' ')[1];
+        if (!token) {
+            return res.status(400).json({ error: "Token not found" });
+        }
+        const verify = jwt.verify(token, process.env.SECRET_KEY);
+        if (verify) {
+            return res.status(200).json({ msg: "verified" });
+        }
+        else{
+            return res.status(200).json({ msg: "notverified" });
+        }
+    } catch (error) {
+        return res.status(500).json({ error: "Some error occured" });
+    }
+}
+
+const setMyRole = async(req, res) => {
+    try {
+        const { role } = req.body;
+        const user = await User.findOne({ email : req.email });
+        user.role = role;
+        await user.save();
+        return res.status(200).json({ msg: "Role set successfully" });
+    } catch (error) {
+        return res.status(500).json({ error: "Some error occured" });
+    }
+}
+
+module.exports = { signup, signin, verifyToken, setMyRole };

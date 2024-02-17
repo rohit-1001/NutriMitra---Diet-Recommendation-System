@@ -21,6 +21,7 @@ import "./NavbarStyle.css";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 const Navbar3 = (props) => {
+  const { role, setRole } = props.details;
   const navigate = useNavigate();
   const [showMediaIcons, setShowMediaIcons] = useState(false);
   let menuRef = useRef();
@@ -42,6 +43,7 @@ const Navbar3 = (props) => {
       try {
         localStorage.removeItem("token");
         localStorage.setItem("role", "visitor");
+        setRole("visitor");
         navigate("/");
       } catch (error) {
         if (error.response) {
@@ -109,7 +111,6 @@ const Navbar3 = (props) => {
               </div>
             </NavLink>
             <NavLink
-              to="/logout"
               onClick={logout}
               style={({ isActive }) => ({
                 color: isActive ? "#158344" : "#545e6f",

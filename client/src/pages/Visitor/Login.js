@@ -4,7 +4,8 @@ import { toast } from "react-toastify";
 import axios from "axios";
 const {useNavigate} = require("react-router-dom");
 
-const Login = () => {
+const Login = (props) => {
+  const { role, setRole } = props.details;
   const [login, setLogin] = useState({
     email: "",
     password: ""
@@ -31,6 +32,7 @@ const Login = () => {
       if(response.status === 200) {
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("role", response.data.role);
+        setRole(response.data.role);
         toast.success(response.data.msg);
         navigate('/')
       }
