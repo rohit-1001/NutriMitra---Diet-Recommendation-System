@@ -44,17 +44,10 @@ const Navbar2 = (props) => {
   const logout = async () => {
     const confirmLogout = window.confirm("Are you sure, you want to log out?");
     if (confirmLogout) {
-      const { setRole } = props.details;
       try {
-        const res = await axios.post("/adminlogout", {
-          withCredentials: true,
-        });
-
-        if (res.status === 200) {
-          toast.info(res.data.msg);
-          setRole("visitor");
-          navigate("/login");
-        }
+        localStorage.removeItem("token");
+        localStorage.setItem("role", "visitor");
+        navigate("/");
       } catch (error) {
         if (error.response) {
           toast.error(error.response.data.error);
@@ -177,7 +170,8 @@ const Navbar2 = (props) => {
                 <FontAwesomeIcon icon={faSignOutAlt} />
                 <li
                   className="listItem"
-                  onClick={() => setShowMediaIcons(false)}
+                  onClick={() => {setShowMediaIcons(false)
+                  logout()}}
                   style={{
                     fontWeight: "600",
                     marginLeft: window.innerWidth <= 768 ? "10px" : "0px",

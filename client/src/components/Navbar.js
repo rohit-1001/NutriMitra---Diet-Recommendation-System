@@ -14,7 +14,7 @@ import { faTachometerAlt } from "@fortawesome/free-solid-svg-icons"; // Dashboar
 import { faBox } from "@fortawesome/free-solid-svg-icons"; // Products
 import { faHistory } from "@fortawesome/free-solid-svg-icons"; // History
 import { faClipboardList } from "@fortawesome/free-solid-svg-icons"; // Orders
-import { faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
+import { faSignInAlt } from "@fortawesome/free-solid-svg-icons";
 import { faUser } from "@fortawesome/free-solid-svg-icons"; // Logout
 import { FaShoppingCart } from "react-icons/fa";
 import { faHome } from "@fortawesome/free-solid-svg-icons";
@@ -151,7 +151,7 @@ const Navbar = (props) => {
                 flexDirection: window.innerWidth <= 768 ? "row" : "column",
                 alignItems: "center",
               }}>
-                <FontAwesomeIcon icon={faSignOutAlt} />
+                <FontAwesomeIcon icon={faSignInAlt} />
                 <li className='listItem' onClick={() => setShowMediaIcons(false)} style={{
                   fontWeight: '600',
                   marginLeft: window.innerWidth <= 768 ? "10px" : "0px",
