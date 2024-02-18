@@ -57,10 +57,10 @@ const Blogs = () => {
     setSelectedBlog(blog);
   };
 
-  useEffect(() => {
-    console.log("Selected Blog: ", selectedBlog);
+//   useEffect(() => {
+//     console.log("Selected Blog: ", selectedBlog);
     
-    },[selectedBlog])
+//     },[selectedBlog])
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -153,7 +153,7 @@ const Blogs = () => {
                 fontSize: "0.8rem",
               }}
             >
-              Written By : {Username}
+              Written By :{Username == localStorage.getItem("name") ? "You" : Username}
             </Typography>
             <Typography
               variant="body2"
@@ -194,9 +194,9 @@ const Blogs = () => {
     );
   }
 
-  useEffect(() => {
-    console.log(blogs);
-  }, [blogs]);
+//   useEffect(() => {
+//     console.log(blogs);
+//   }, [blogs]);
 
 
   return (
@@ -361,7 +361,7 @@ const Blogs = () => {
                 fontSize: "0.8rem",
               }}
             >
-              Written By : {selectedBlog?.Username}
+              Written By : {selectedBlog?.Username == localStorage.getItem("name") ? "You" : selectedBlog?.Username}
             </Typography>
             <Typography
               variant="body2"
@@ -406,7 +406,7 @@ const Blogs = () => {
                       }}
                     >
                       <Typography variant="body1">
-                        <strong>{comment.username}</strong>: {comment.comment}
+                        <strong>{comment.username === localStorage.getItem('name') ? "You" : comment.username }</strong>: {comment.comment}
                       </Typography>
                     </div>
                   ))}
