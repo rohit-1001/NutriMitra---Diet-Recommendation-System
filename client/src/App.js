@@ -15,6 +15,7 @@ import VideoConference from './pages/User/VideoConference';
 import NotFound from "./components/NotFound"
 import Login from './pages/Visitor/Login';
 import SelectRole from './components/SelectRole';
+import VideoStartPage from './pages/VideoStartPage';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
@@ -81,6 +82,7 @@ function App() {
             <Route path="/recipes" element={<Recipes />} />
             <Route path="/blogs" element={<Blogs />} />
             <Route path="/videoconferencing" element={<VideoConference />} />
+            <Route path="/startcall" element={<VideoStartPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </>
@@ -92,6 +94,8 @@ function App() {
             <Route exact path="/" element={<Home />} />
             <Route exact path="/home" element={<Home />} />
             <Route path="/about" element={<About />} />
+        <Route path="/videoconferencing" element={<VideoConference />} />
+        <Route path="/startcall" element={<VideoStartPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </>
