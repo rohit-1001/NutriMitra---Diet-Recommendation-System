@@ -12,6 +12,7 @@ app.use(cors({
 }));
 app.use(require('./routes/auth'));
 app.use(require('./routes/blog'));
+app.use(require('./routes/recipiroute'));
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
