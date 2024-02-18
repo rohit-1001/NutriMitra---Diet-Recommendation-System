@@ -47,6 +47,8 @@ const Navbar2 = (props) => {
     if (confirmLogout) {
       try {
         localStorage.removeItem("token");
+        localStorage.removeItem("name");
+        localStorage.removeItem("email");
         localStorage.setItem("role", "visitor");
         setRole("visitor");
         navigate("/");
