@@ -11,6 +11,8 @@ import About from './pages/Visitor/About';
 import UserHome from './pages/User/UserHome';
 import Recipes from './pages/User/Recipes';
 import Blogs from './pages/User/Blogs';
+import ExpertHome from './pages/Expert/ExpertHome';
+import WriteBlog from './pages/Expert/WriteBlog';
 import VideoConference from './pages/User/VideoConference';
 import NotFound from "./components/NotFound"
 import Login from './pages/Visitor/Login';
@@ -89,9 +91,9 @@ function App() {
         <>
           <Navbar3 details={{ role, setRole }}  />
           <Routes>
-            <Route exact path="/" element={<Home />} />
-            <Route exact path="/home" element={<Home />} />
-            <Route path="/about" element={<About />} />
+            <Route exact path="/" element={<ExpertHome />} />
+            <Route exact path="/home" element={<ExpertHome />} />
+            <Route path="/writeblogs" element={<WriteBlog />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </>

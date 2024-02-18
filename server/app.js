@@ -11,6 +11,7 @@ app.use(cors({
     credentials: true,
 }));
 app.use(require('./routes/auth'));
+app.use(require('./routes/blog'));
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });

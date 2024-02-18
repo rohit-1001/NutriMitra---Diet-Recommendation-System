@@ -165,7 +165,7 @@ const SelectRole = (props) => {
               },
               cursor: "pointer",
             }}
-            onClick={() => submitRole("user")}
+            onClick={() => submitRole("expert")}
           >
             <CardContent>
               <Typography
