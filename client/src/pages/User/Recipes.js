@@ -10,11 +10,8 @@ const Recipes = () => {
   const getRecipes = async (e) => {
     e.preventDefault();
     try {
-      console.log(search);
       const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/getrecipe`, { query: search });
-      console.log(response);
       setRecipes(response.data);
-      console.log(recipes);
     } catch (error) {
       console.error('Error fetching recipes:', error);
     }
