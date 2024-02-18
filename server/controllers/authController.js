@@ -41,7 +41,7 @@ const signin = async(req, res) => {
                 if(role === null){
                     role = "notset"
                 }
-                return res.status(200).json({ msg: "Login successful",token: token , role: role});
+                return res.status(200).json({ msg: "Login successful",token: token , role: role, email: email, name: user.name});
             }
         }
         else{

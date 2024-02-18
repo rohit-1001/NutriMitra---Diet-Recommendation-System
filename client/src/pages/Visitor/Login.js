@@ -32,6 +32,8 @@ const Login = (props) => {
       if(response.status === 200) {
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("role", response.data.role);
+        localStorage.setItem("email", response.data.email);
+        localStorage.setItem("name", response.data.name);
         setRole(response.data.role);
         toast.success(response.data.msg);
         navigate('/')
