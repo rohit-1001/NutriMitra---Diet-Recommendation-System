@@ -55,7 +55,11 @@ export default function HomeAbout() {
             <div className="leftsec">
               <h2>Who is NutriMitra?</h2>
               <div className="seewhy">We streamline diet management, making it simple and effective.</div>
-              <div className="seewhyinfo">While many perceive diet management solutions as mere trackers of food intake, our vision extends far beyond that notion. We recognize a superior approach to nourishment.
+              <div className="seewhyinfo" style={{
+                textAlign: "justify",
+                // border: "2px solid red",
+                lineHeight: "2rem"
+              }}>While many perceive diet management solutions as mere trackers of food intake, our vision extends far beyond that notion. We recognize a superior approach to nourishment.
                 Our ethos revolves around empowering individuals and their well-being journey.
                 <br />That's why we're committed to simplifying the dietary management process, ensuring it's accessible and user-friendly. The outcome is a platform that fosters organization, effectiveness, confidence, and positive results in managing your diet.</div>
             </div>
@@ -63,15 +67,27 @@ export default function HomeAbout() {
 
           </div>
         </Fade>
-        <div>
+        <div style={{
+          // border: "2px solid red",
+          width: "100%",
+          height: "200px",
+        }}>
           <img src={homeimg1} alt="" className='footerimg' />
         </div>
         <div className="sec1" id='aboutsec2'>
 
           <Slide left>
-            <div className="leftsec">
+            <div className="leftsec" style={{
+              width: "70%"
+            }}>
               <h2>What is NutriMitra?</h2>
-              <div className="seewhyinfo" id='absec2left'>
+              <div className="seewhyinfo" id='absec2left' style={{
+                textAlign: "justify",
+                width: "100%",
+                // border: "2px solid red",
+                padding: "1em 0",
+                lineHeight: "2rem"
+              }}>
                 NutriMitra is a cutting-edge platform designed to assist individuals in effectively managing their dietary habits. Our platform offers intuitive tools for diet management, allowing you to track your food intake, set nutrition goals, and monitor your progress with ease. Detailed insights and analytics provide valuable information about your dietary patterns, empowering you to make informed decisions for your health. NutriMitra is a comprehensive solution that enables users to streamline and optimize their dietary management securely and efficiently.
               </div>
             </div>
@@ -101,7 +117,13 @@ export default function HomeAbout() {
           <div className="leftsec" id='founders'>
             <Fade bottom>
               <h2>Meet Our Visionaries</h2>
-              <div className="seewhyinfo">
+              <div className="seewhyinfo"  style={{
+                textAlign: "justify",
+                width: "100%",
+                // border: "2px solid red",
+                padding: "1em 0",
+                lineHeight: "2rem"
+              }}>
                 NutriMitra was conceived by a team of passionate individuals: Akash,  Mahesh, and Rohit. Recognizing the challenges people face in managing their diets, especially in today's fast-paced world, they saw the opportunity to create a platform that simplifies and optimizes the process. Despite initial hurdles and limited experience in diet management software, they embarked on the journey of developing a user-friendly and effective solution.
                 Their commitment to innovation, health, and user satisfaction drives NutriMitra's mission forward. They continuously strive to refine and improve the platform to meet the ever-changing needs of individuals on their health journeys.
               </div>

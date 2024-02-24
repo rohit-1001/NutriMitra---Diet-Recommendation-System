@@ -62,7 +62,11 @@ const Home = () => {
           <Fade left>
             <div className="left123">
               <h3>Manage Your Diet</h3>
-              <div className="leftinfo123">
+              <div className="leftinfo123" style={{
+                // border: "2px solid red",
+                width: "70%",
+                textAlign: "justify"
+              }}>
                 <ul>
                   <li>Efficiently organize and track your dietary intake using our intuitive management tools.</li>
                   <li>Add and categorize your food items, set consumption goals, and monitor nutritional needs.</li>
@@ -80,16 +84,30 @@ const Home = () => {
         </div>
 
 
-        <div className="sec2div1222">
+        <div className="sec2div1222" style={{
+          // border: "2px solid green",
+          display: "flex",
+          justifyContent: "space-between",
+        }}>
+          <div>
           <Fade left>
-            <div className="right123">
+            <div className="right123" style={{
+              // border: "2px solid red",
+            width : "100%"
+            }}>
               <img src={verficiation} alt="" id="thirdimg123" />
             </div>
           </Fade>
+          </div>
+          <div>
           <Fade right>
             <div className="left123">
               <h3>Verify Dietary Intake and Begin Management</h3>
-              <div className="leftinfo123">
+              <div className="leftinfo123" style={{
+                // border: "2px solid red",
+                width: "100%",
+                textAlign: "justify"
+              }}>
                 <ul>
                   <li>Efficiently verify your dietary intake within 60 seconds.</li>
                   <li>Access 24/7/365 customer support for any assistance on your health journey.</li>
@@ -99,12 +117,17 @@ const Home = () => {
             </div>
 
           </Fade>
+          </div>
         </div>
         <div className="sec2div1222">
           <Fade left>
             <div className="left123">
               <h3>Stay Updated</h3>
-              <div className="leftinfo123">
+              <div className="leftinfo123" style={{
+                // border: "2px solid red",
+                width: "80%",
+                textAlign: "justify"
+              }}>
                 <ul>
                   <li>Login to access the latest dietary updates on our platform.</li>
                   <li>Monitor your nutritional levels and receive feedback or notifications.</li>
@@ -125,7 +148,7 @@ const Home = () => {
       <Zoom>
         <div id='heading211'>Testimonials</div>
       </Zoom>
-      <Slide bottom cascade>
+      <Slide >
         <div className="outertestimonials123">
           <div className="container1111">
             <div className="testimonial-box999">

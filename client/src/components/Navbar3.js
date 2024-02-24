@@ -16,6 +16,8 @@ import { faBox } from '@fortawesome/free-solid-svg-icons'; // Products
 import { faHistory } from '@fortawesome/free-solid-svg-icons'; // History
 import { faClipboardList } from '@fortawesome/free-solid-svg-icons'; // Orders
 import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons'; // Logout
+import { faBlogger } from '@fortawesome/free-brands-svg-icons';
+import { faVideo } from '@fortawesome/free-solid-svg-icons';
 import {faInfoCircle} from '@fortawesome/free-solid-svg-icons'
 import {faHome} from '@fortawesome/free-solid-svg-icons'
 import "react-toastify/dist/ReactToastify.css";
@@ -127,7 +129,7 @@ const Navbar3 = (props) => {
                 flexDirection: window.innerWidth <= 768 ? "row" : "column",
                 alignItems: "center",
               }}>
-                <FontAwesomeIcon icon={faSignOutAlt} />
+                <FontAwesomeIcon icon={faBlogger} />
                 <li className='listItem' onClick={() => setShowMediaIcons(false)} style={{
                   fontWeight: '600',
                   marginLeft: window.innerWidth <= 768 ? "10px" : "0px",
@@ -147,7 +149,7 @@ const Navbar3 = (props) => {
                 flexDirection: window.innerWidth <= 768 ? "row" : "column",
                 alignItems: "center",
               }}>
-                <FontAwesomeIcon icon={faSignOutAlt} />
+                <FontAwesomeIcon icon={faVideo} />
                 <li className='listItem' onClick={() => setShowMediaIcons(false)} style={{
                   fontWeight: '600',
                   marginLeft: window.innerWidth <= 768 ? "10px" : "0px",
