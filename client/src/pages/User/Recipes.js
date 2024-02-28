@@ -26,10 +26,29 @@ const Recipes = () => {
     <br></br>
       <h1 className='heading-top'>Search for Recipes</h1><br />
       <form onSubmit={getRecipes} className="search-form">
-        <input className='search-bar' type='text' value={search} onChange={updateSearch} />
-        <button className='search-button' type="submit"> Search</button>
+        <input className='search-bar' type='text' value={search} onChange={updateSearch} style={{
+          borderRadius: '30px',
+          border: '1px solid grey',
+        
+        }} />
+        <button className='search-button' type="submit" style={{
+          backgroundColor: '#168445',
+          color: 'white',
+          borderRadius: '30px',
+          padding: '10px 20px',
+          fontSize: '20px',
+          cursor: 'pointer',
+          margin: "0 10px"
+
+
+        
+        }}> Search</button>
       </form>
-      <div className='innerform'>
+      <div className='innerform' style={{
+        // border: "1px solid black",
+        width: "85%",
+        margin: "auto",
+      }}>
         {recipes.map(recipe => (
           <Recipe
             key={recipe.recipe.label}
