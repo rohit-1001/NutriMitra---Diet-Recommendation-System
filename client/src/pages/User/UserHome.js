@@ -1,11 +1,19 @@
-import React from 'react'
-
+import React from "react";
+import UserForm from "../../components/UserForm";
 const UserHome = () => {
   return (
-    <div>
-        Hello UserHome
-    </div>
-  )
-}
+    <>
+      <div style={{textAlign: "center", width:"100%", padding:"2rem 0 0 0", fontWeight: "bolder", fontSize: "1.5rem"}}>Diet Recommendation</div>
+      <div style={{
+        width : "70%",
+        margin: "0 auto",
+        padding: "20px"
 
-export default UserHome
+      }}>
+      <UserForm />
+      </div>
+    </>
+  );
+};
+
+export default UserHome;
