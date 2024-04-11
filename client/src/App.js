@@ -22,7 +22,7 @@ import CreateEventPage from "./pages/Expert/CreateEventPage";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
-
+import "./App.css";
 function App() {
   const [role, setRole] = useState("visitor");
   const verifyToken = async (token) => {

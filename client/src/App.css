@@ -46,3 +46,12 @@ body{
   font-size: 14px;
   color: #555;
 }
+
+.makeStyles-formControl-1{
+  margin: 0px 10px;
+  border: 2px solid red;
+}
+
+.MuiInput-underline:after {
+  border-bottom: 2px solid red;
+}
