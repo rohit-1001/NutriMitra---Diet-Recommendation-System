@@ -1,19 +1,19 @@
-import * as React from "react";
+import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import { useState } from "react";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Modal from "@mui/material/Modal";
 import TextField from "@mui/material/TextField";
-import DatePicker from "@mui/lab/DatePicker";
 import Grid from "@mui/material/Grid";
+import { toast } from "react-toastify";
+import axios from "axios";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -48,29 +48,78 @@ function a11yProps(index) {
   };
 }
 
-export default function CreateEventPage() {
+let username = localStorage.getItem("name");
+let useremail = localStorage.getItem("email");
+
+export default function CreateEventPage(props) {
   const [value, setValue] = useState(0);
   const [openModal, setOpenModal] = useState(false);
-  const [selectedDate, setSelectedDate] = React.useState(new Date());
-  const [selectedTime, setSelectedTime] = useState("");
-  const [estimatedTime, setEstimatedTime] = useState("");
+  // const [events, setEvents] = useState();
 
-  const handleEstimatedTimeChange = (event) => {
-    setEstimatedTime(event.target.value);
+  // const getAllEvents = async () => {
+  //   try{
+  //     const res = await axios.get('getEvents');
+  //     setEvents(res.data);
+  //   }
+  //   catch(error){
+  //     if (error.response) {
+  //       toast.error(error.response.data.error);
+  //     }
+  //   }
+  // }
+
+  // useEffect = () => {
+  //   getAllEvents();
+  // }
+
+  const [event, setEvent] = useState({
+    title: "",
+    date: "",
+    time: "",
+    duration: "",
+    mode: "Online",
+    organiser: username,
+    orgemail: useremail,
+    speaker: "",
+    description: "",
+    image: "",
+    meetId: "",
+  });
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result.split(",")[1]; // Get the base64 string
+        setEvent({ ...event, image: base64String }); // Store the base64 string in state
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const timeOptions = [
-    { label: "30 minutes", value: 30 },
-    { label: "1 hour", value: 60 },
-    { label: "1.5 hours", value: 90 },
-    { label: "2 hours", value: 120 },
-    { label: "2.5 hours", value: 150 },
-    { label: "3 hours", value: 180 },
+    { label: "30 minutes", value: "30 minutes" },
+    { label: "1 hour", value: "1 hour" },
+    { label: "1.5 hours", value: "1.5 hours" },
+    { label: "2 hours", value: "2 hours" },
+    { label: "2.5 hours", value: "2.5 hours" },
+    { label: "3 hours", value: "3 hours" },
   ];
-
-  const handleTimeChange = (event) => {
-    setSelectedTime(event.target.value);
+  
+  const handleEventChange = (e) => {
+    setEvent({ ...event, [e.target.name]: e.target.value });
   };
+  
+  function generateRandomString(length) {
+    const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * charset.length);
+      result += charset[randomIndex];
+    }
+    return result;
+  }
 
   const generateTimeOptions = () => {
     const timeOptions = [];
@@ -90,11 +139,42 @@ export default function CreateEventPage() {
   };
 
   const handleModalOpen = () => {
+    let id = generateRandomString(10);
+    setEvent({ ...event, meetId: id });
     setOpenModal(true);
   };
 
   const handleModalClose = () => {
     setOpenModal(false);
+  };
+
+  const submitCreateEvent = async () => {
+    try {
+      const res = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/createEvent`,
+        event
+      );
+      setEvent({
+        title: "",
+        date: "",
+        time: "",
+        duration: "",
+        mode: "Online",
+        organiser: username,
+        orgemail: useremail,
+        speaker: "",
+        description: "",
+        image: "",
+        meetId: "",
+      });
+      if (res.status === 200) {
+        toast.success(res.data.msg);
+      }
+    } catch (error) {
+      if (error.response) {
+        toast.error(error.response.data.error);
+      }
+    }
   };
 
   // Dummy data for events
@@ -128,6 +208,7 @@ export default function CreateEventPage() {
 
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
+
 
   return (
     <>
@@ -329,7 +410,7 @@ export default function CreateEventPage() {
             width: 600,
             maxWidth: "95%",
             bgcolor: "background.paper",
-            border: "2px solid #000",
+            border: "2px solid green",
             boxShadow: 24,
             p: 4,
           }}
@@ -343,7 +424,17 @@ export default function CreateEventPage() {
                 id="event-title"
                 label="Event Title"
                 fullWidth
+                name="title"
+                value={event.title}
+                onChange={handleEventChange}
+                required
                 sx={{ mb: 2 }}
+                InputProps={{
+                  sx: {
+                    borderColor: "green",
+                    "&:focus": { borderColor: "green" }, // Set border color to green when focused
+                  },
+                }}
               />
             </Grid>
 
@@ -354,13 +445,21 @@ export default function CreateEventPage() {
                   label="Date"
                   type="date"
                   fullWidth
+                  name="date"
+                  value={event.date}
+                  onChange={handleEventChange}
+                  required
                   InputLabelProps={{
                     shrink: true,
                   }}
                   InputProps={{
-                    inputProps: {
-                      min: tomorrow.toISOString().split("T")[0], // Set minimum date to tomorrow
+                    sx: {
+                      borderColor: "#3b8a51",
+                      "&:focus": { borderColor: "#4caf50" }, // Set border color to green when focused
                     },
+                  }}
+                  inputProps={{
+                    min: tomorrow.toISOString().split("T")[0],
                   }}
                 />
               </Grid>
@@ -370,13 +469,25 @@ export default function CreateEventPage() {
                   label="Time"
                   select
                   fullWidth
-                  value={selectedTime}
-                  onChange={handleTimeChange}
+                  name="time"
+                  value={event.time}
+                  onChange={handleEventChange}
+                  required
                   InputLabelProps={{
                     shrink: true,
                   }}
                   SelectProps={{
                     native: true,
+                    sx: {
+                      borderColor: "#3b8a51",
+                      "&:focus": { borderColor: "#4caf50" }, // Set border color to green when focused
+                    },
+                  }}
+                  InputProps={{
+                    sx: {
+                      borderColor: "#3b8a51",
+                      "&:focus": { borderColor: "#4caf50" }, // Set border color to green when focused
+                    },
                   }}
                 >
                   {generateTimeOptions().map((timeOption) => (
@@ -389,16 +500,28 @@ export default function CreateEventPage() {
               <Grid item xs={6}>
                 <TextField
                   id="estimated-time"
-                  label="Estimated Time"
+                  label="Estimated Duration"
                   select
                   fullWidth
-                  value={estimatedTime}
-                  onChange={handleEstimatedTimeChange}
+                  name="duration"
+                  value={event.duration}
+                  onChange={handleEventChange}
+                  required
                   InputLabelProps={{
                     shrink: true,
                   }}
                   SelectProps={{
                     native: true,
+                    sx: {
+                      borderColor: "#3b8a51",
+                      "&:focus": { borderColor: "#4caf50" }, // Set border color to green when focused
+                    },
+                  }}
+                  InputProps={{
+                    sx: {
+                      borderColor: "#3b8a51",
+                      "&:focus": { borderColor: "#4caf50" }, // Set border color to green when focused
+                    },
                   }}
                 >
                   {timeOptions.map((option) => (
@@ -409,7 +532,20 @@ export default function CreateEventPage() {
                 </TextField>
               </Grid>
               <Grid item xs={6}>
-                <TextField id="event-mode" label="Mode" fullWidth />
+                <TextField
+                  id="event-mode"
+                  label="Mode"
+                  fullWidth
+                  name="mode"
+                  value={event.mode}
+                  disabled
+                  InputProps={{
+                    sx: {
+                      borderColor: "#3b8a51",
+                      "&:focus": { borderColor: "#4caf50" }, // Set border color to green when focused
+                    },
+                  }}
+                />
               </Grid>
               <Grid item xs={12}>
                 <TextField
@@ -417,27 +553,75 @@ export default function CreateEventPage() {
                   label="Description"
                   multiline
                   fullWidth
+                  name="description"
+                  value={event.description}
+                  onChange={handleEventChange}
+                  required
                   sx={{
-                    maxHeight: 200, // Adjust this value as needed
+                    maxHeight: 200,
                     overflowY: "auto",
                     paddingTop: "0px",
                     "& .MuiInputLabel-root": {
                       marginTop: "5px",
                     },
                   }}
+                  InputProps={{
+                    sx: {
+                      borderColor: "#3b8a51",
+                      "&:focus": { borderColor: "#4caf50" }, // Set border color to green when focused
+                    },
+                  }}
                 />
               </Grid>
 
               <Grid item xs={6}>
-                <TextField id="event-organiser" label="Organiser" fullWidth />
+                <TextField
+                  id="event-organiser"
+                  label="Organiser"
+                  fullWidth
+                  name="organiser"
+                  value={username}
+                  disabled
+                  InputProps={{
+                    sx: {
+                      borderColor: "#3b8a51",
+                      "&:focus": { borderColor: "#4caf50" }, // Set border color to green when focused
+                    },
+                  }}
+                />
               </Grid>
               <Grid item xs={6}>
-                <TextField id="event-speaker" label="Speaker" fullWidth />
+                <TextField
+                  id="event-speaker"
+                  label="Speaker"
+                  fullWidth
+                  name="speaker"
+                  value={event.speaker}
+                  required
+                  onChange={handleEventChange}
+                  InputProps={{
+                    sx: {
+                      borderColor: "#3b8a51",
+                      "&:focus": { borderColor: "#4caf50" }, // Set border color to green when focused
+                    },
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <input
+                  type="file"
+                  id="event-image"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  required
+                />
               </Grid>
             </Grid>
-            {/* Add more fields for event creation as needed */}
             <Button
-              onClick={handleModalClose}
+              onClick={() => {
+                handleModalClose();
+                submitCreateEvent();
+              }}
               sx={{
                 backgroundColor: "#3b8a51",
                 ":hover": {
