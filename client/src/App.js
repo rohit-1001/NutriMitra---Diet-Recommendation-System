@@ -18,6 +18,7 @@ import NotFound from "./components/NotFound";
 import Login from "./pages/Visitor/Login";
 import SelectRole from "./components/SelectRole";
 import VideoStartPage from "./pages/VideoStartPage";
+import CreateEventPage from "./pages/Expert/CreateEventPage";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
@@ -102,10 +103,29 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/videoconferencing" element={<VideoConference />} />
             <Route path="/startcall" element={<VideoStartPage />} />
+            <Route path="/events" element={<CreateEventPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </>
       )}
+
+      {/* remaining to do */}
+      {/* {role === "admin" && (
+        <>
+          <Navbar3 details={{ role, setRole }} />
+          <Routes>
+            <Route exact path="/" element={<ExpertHome />} />
+            <Route exact path="/home" element={<ExpertHome />} />
+            <Route path="/writeblogs" element={<WriteBlog />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/videoconferencing" element={<VideoConference />} />
+            <Route path="/startcall" element={<VideoStartPage />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </>
+      )} */}
+
+      
       {role === "notset" && (
         <>
           <Routes>
