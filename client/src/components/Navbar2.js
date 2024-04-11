@@ -21,6 +21,7 @@ import { faBlogger } from '@fortawesome/free-brands-svg-icons';
 import { faVideo } from '@fortawesome/free-solid-svg-icons';
 import {faHome} from '@fortawesome/free-solid-svg-icons'
 import "react-toastify/dist/ReactToastify.css";
+import {faCalendarDays} from '@fortawesome/free-solid-svg-icons'
 import { toast } from "react-toastify";
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -154,6 +155,26 @@ const Navbar2 = (props) => {
                   fontWeight: '600',
                   marginLeft: window.innerWidth <= 768 ? "10px" : "0px",
                 }}>Video Conference</li>
+              </div>
+            </NavLink>
+            <NavLink to="/events"
+              style={({ isActive }) => ({
+                color: isActive ? '#158344' : '#545e6f',
+                textDecoration: 'none',
+                fontWeight: '500',
+                // background: isActive ? '#7600dc' : '#f0f0f0',
+              })}
+            >
+              <div style={{
+                display: "flex",
+                flexDirection: window.innerWidth <= 768 ? "row" : "column",
+                alignItems: "center",
+              }}>
+                <FontAwesomeIcon icon={faCalendarDays} />
+                <li className='listItem' onClick={() => setShowMediaIcons(false)} style={{
+                  fontWeight: '600',
+                  marginLeft: window.innerWidth <= 768 ? "10px" : "0px",
+                }}>Events</li>
               </div>
             </NavLink>
             <NavLink

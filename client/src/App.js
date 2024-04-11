@@ -19,6 +19,7 @@ import Login from "./pages/Visitor/Login";
 import SelectRole from "./components/SelectRole";
 import VideoStartPage from "./pages/VideoStartPage";
 import CreateEventPage from "./pages/Expert/CreateEventPage";
+import UserEvents from "./pages/User/UserEvents";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
@@ -89,6 +90,7 @@ function App() {
             <Route path="/blogs" element={<Blogs />} />
             <Route path="/videoconferencing" element={<VideoConference />} />
             <Route path="/startcall" element={<VideoStartPage />} />
+            <Route path="/events" element={<UserEvents />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </>

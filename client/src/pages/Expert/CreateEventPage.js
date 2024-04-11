@@ -193,35 +193,6 @@ export default function CreateEventPage(props) {
     }
   };
 
-  // Dummy data for events
-  // const events = [
-  //   {
-  //     id: 1,
-  //     title: "Event 1",
-  //     date: "2024-04-15",
-  //     description: "This is the description for Event 1.",
-  //     time: "14:00",
-  //     duration: "1 hour",
-  //     image: "https://via.placeholder.com/300", // Placeholder image URL
-  //     mode: "Online",
-  //     organiser: "Organiser 1",
-  //     speaker: "Speaker 1",
-  //   },
-  //   {
-  //     id: 2,
-  //     title: "Event 2",
-  //     date: "2024-04-20",
-  //     time: "14:00",
-  //     duration: "1 hour",
-  //     description: "This is the description for Event 2.",
-  //     image: "https://via.placeholder.com/300", // Placeholder image URL
-  //     mode: "Offline",
-  //     organiser: "Organiser 2",
-  //     speaker: "Speaker 2",
-  //   },
-  //   // Add more dummy events as needed
-  // ];
-
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
 
@@ -232,10 +203,6 @@ export default function CreateEventPage(props) {
     const year = date.getFullYear();
     return `${day}-${month}-${year}`;
   }
-
-  const handleJoinEvent = (meetId) => {
-    window.open(`https://meet.google.com/${meetId}`, "_blank");
-  };
 
   return (
     <>
