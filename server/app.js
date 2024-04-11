@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const PORT = process.env.PORT;
 const app = express();
-app.use(bodyParser.json({ limit: '10mb' })); // Adjust the limit as needed
+app.use(bodyParser.json({ limit: '50mb' })); // Adjust the limit as needed
 app.use(express.json());
 app.use(cors({
     origin: process.env.CLIENT_URL,

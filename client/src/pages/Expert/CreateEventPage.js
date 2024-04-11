@@ -14,6 +14,7 @@ import TextField from "@mui/material/TextField";
 import Grid from "@mui/material/Grid";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -54,23 +55,27 @@ let useremail = localStorage.getItem("email");
 export default function CreateEventPage(props) {
   const [value, setValue] = useState(0);
   const [openModal, setOpenModal] = useState(false);
-  // const [events, setEvents] = useState();
+  const [events, setEvents] = useState([]);
+  const [loaded, setLoaded] = useState(false);
 
-  // const getAllEvents = async () => {
-  //   try{
-  //     const res = await axios.get('getEvents');
-  //     setEvents(res.data);
-  //   }
-  //   catch(error){
-  //     if (error.response) {
-  //       toast.error(error.response.data.error);
-  //     }
-  //   }
-  // }
-
-  // useEffect = () => {
-  //   getAllEvents();
-  // }
+  const getAllEvents = async () => {
+    try {
+      const res = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/getEvents`
+      );
+      setEvents(res.data);
+      console.log(events);
+    } catch (error) {
+      if (error.response) {
+        toast.error(error.response.data.error);
+      }
+    }
+  };
+  useEffect(() => {
+    setLoaded(false);
+    getAllEvents();
+    setLoaded(true);
+  }, []);
 
   const [event, setEvent] = useState({
     title: "",
@@ -86,15 +91,20 @@ export default function CreateEventPage(props) {
     meetId: "",
   });
 
+  const navigate = useNavigate()
+  const connectcall = (meetingID) => {
+    navigate(`/startcall?meetingID=${meetingID}`);
+  }
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64String = reader.result.split(",")[1]; // Get the base64 string
+      reader.readAsDataURL(file);
+      reader.onloadend = async () => {
+        const base64String = reader.result; // Get the base64 string
         setEvent({ ...event, image: base64String }); // Store the base64 string in state
       };
-      reader.readAsDataURL(file);
     }
   };
 
@@ -106,14 +116,15 @@ export default function CreateEventPage(props) {
     { label: "2.5 hours", value: "2.5 hours" },
     { label: "3 hours", value: "3 hours" },
   ];
-  
+
   const handleEventChange = (e) => {
     setEvent({ ...event, [e.target.name]: e.target.value });
   };
-  
+
   function generateRandomString(length) {
-    const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let result = '';
+    const charset =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let result = "";
     for (let i = 0; i < length; i++) {
       const randomIndex = Math.floor(Math.random() * charset.length);
       result += charset[randomIndex];
@@ -170,6 +181,9 @@ export default function CreateEventPage(props) {
       if (res.status === 200) {
         toast.success(res.data.msg);
       }
+      setLoaded(false);
+      getAllEvents();
+      setLoaded(true);
     } catch (error) {
       if (error.response) {
         toast.error(error.response.data.error);
@@ -178,37 +192,48 @@ export default function CreateEventPage(props) {
   };
 
   // Dummy data for events
-  const events = [
-    {
-      id: 1,
-      title: "Event 1",
-      date: "2024-04-15",
-      description: "This is the description for Event 1.",
-      time: "14:00",
-      duration: "1 hour",
-      image: "https://via.placeholder.com/300", // Placeholder image URL
-      mode: "Online",
-      organiser: "Organiser 1",
-      speaker: "Speaker 1",
-    },
-    {
-      id: 2,
-      title: "Event 2",
-      date: "2024-04-20",
-      time: "14:00",
-      duration: "1 hour",
-      description: "This is the description for Event 2.",
-      image: "https://via.placeholder.com/300", // Placeholder image URL
-      mode: "Offline",
-      organiser: "Organiser 2",
-      speaker: "Speaker 2",
-    },
-    // Add more dummy events as needed
-  ];
+  // const events = [
+  //   {
+  //     id: 1,
+  //     title: "Event 1",
+  //     date: "2024-04-15",
+  //     description: "This is the description for Event 1.",
+  //     time: "14:00",
+  //     duration: "1 hour",
+  //     image: "https://via.placeholder.com/300", // Placeholder image URL
+  //     mode: "Online",
+  //     organiser: "Organiser 1",
+  //     speaker: "Speaker 1",
+  //   },
+  //   {
+  //     id: 2,
+  //     title: "Event 2",
+  //     date: "2024-04-20",
+  //     time: "14:00",
+  //     duration: "1 hour",
+  //     description: "This is the description for Event 2.",
+  //     image: "https://via.placeholder.com/300", // Placeholder image URL
+  //     mode: "Offline",
+  //     organiser: "Organiser 2",
+  //     speaker: "Speaker 2",
+  //   },
+  //   // Add more dummy events as needed
+  // ];
 
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
 
+  function formatDate(date) {
+    date = new Date(date);
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  }
+
+  const handleJoinEvent = (meetId) => {
+    window.open(`https://meet.google.com/${meetId}`, "_blank");
+  };
 
   return (
     <>
@@ -262,135 +287,179 @@ export default function CreateEventPage(props) {
         </Box>
         <CustomTabPanel value={value} index={0}>
           {/* Accordion for My Events */}
-          {events.map((event) => (
-            <Accordion key={event.id} style={{ width: "100%" }}>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                style={{ width: "100%" }}
-              >
-                <Typography variant="h6">{event.title}</Typography>
-              </AccordionSummary>
-              <AccordionDetails style={{ width: "100%" }}>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} md={9} container direction="column">
-                    <Grid item container spacing={1}>
-                      <Grid item xs={6}>
-                        <Typography>
-                          <strong>Date:</strong> {event.date}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography>
-                          <strong>Time:</strong> {event.time}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography>
-                          <strong>Estimated Duration:</strong> {event.duration}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography>
-                          <strong>Mode:</strong> {event.mode}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography>
-                          <strong>Organiser:</strong> {event.organiser}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography>
-                          <strong>Speaker:</strong> {event.speaker}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={12}>
-                        <Typography>
-                          <strong>Description:</strong> {event.description}
-                        </Typography>
+          {loaded &&
+            events.map((eve) => (
+              <Accordion key={eve._id} style={{ width: "100%" }}>
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Typography variant="h6" style={{ marginRight: "auto" }}>
+                    {eve.title}
+                  </Typography>
+                  <Button
+                    sx={{
+                      backgroundColor: "#3b8a51",
+                      ":hover": {
+                        backgroundColor: "#34a43c",
+                        transform: "scale(1.02)",
+                        transition: ".2s ease-out",
+                      },
+                    }}
+                    variant="contained"
+                    style={{ marginRight: "5px" }}
+                    onClick={() => connectcall(eve.meetId)}
+                  >
+                    Join
+                  </Button>
+                </AccordionSummary>
+                <AccordionDetails style={{ width: "100%" }}>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} md={9} container direction="column">
+                      <Grid item container spacing={1}>
+                        <Grid item xs={6}>
+                          <Typography>
+                            <strong>Date:</strong> {formatDate(eve.date)}
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography>
+                            <strong>Time:</strong> {eve.time}
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography>
+                            <strong>Estimated Duration:</strong> {eve.duration}
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography>
+                            <strong>Mode:</strong> {eve.mode}
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography>
+                            <strong>Organiser:</strong> {eve.organiser}
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography>
+                            <strong>Speaker:</strong> {eve.speaker}
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={12}>
+                          <Typography>
+                            <strong>Description:</strong> {eve.description}
+                          </Typography>
+                        </Grid>
                       </Grid>
                     </Grid>
+                    <Grid item xs={12} md={3}>
+                      <img
+                        src={eve.image}
+                        alt={eve.title}
+                        style={{
+                          width: "100%",
+                          height: "auto",
+                        }}
+                      />
+                    </Grid>
                   </Grid>
-                  <Grid item xs={12} md={3}>
-                    <img
-                      src={event.image}
-                      alt={event.title}
-                      style={{
-                        width: "100%",
-                        height: "auto",
-                      }}
-                    />
-                  </Grid>
-                </Grid>
-              </AccordionDetails>
-            </Accordion>
-          ))}
+                </AccordionDetails>
+              </Accordion>
+            ))}
         </CustomTabPanel>
         <CustomTabPanel value={value} index={1}>
           {/* Accordion for My Events */}
-          {events.map((event) => (
-            <Accordion key={event.id} style={{ width: "100%" }}>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                style={{ width: "100%" }}
-              >
-                <Typography variant="h6">{event.title}</Typography>
-              </AccordionSummary>
-              <AccordionDetails style={{ width: "100%" }}>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} md={9} container direction="column">
-                    <Grid item container spacing={1}>
-                      <Grid item xs={6}>
-                        <Typography>
-                          <strong>Date:</strong> {event.date}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography>
-                          <strong>Time:</strong> {event.time}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography>
-                          <strong>Estimated Duration:</strong> {event.duration}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography>
-                          <strong>Mode:</strong> {event.mode}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography>
-                          <strong>Organiser:</strong> {event.organiser}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography>
-                          <strong>Speaker:</strong> {event.speaker}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={12}>
-                        <Typography>
-                          <strong>Description:</strong> {event.description}
-                        </Typography>
+          {loaded &&
+            events.map((eve) => (
+              <Accordion key={eve._id} style={{ width: "100%" }}>
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Typography variant="h6" style={{ marginRight: "auto" }}>
+                    {eve.title}
+                  </Typography>
+                  <Button
+                    sx={{
+                      backgroundColor: "#3b8a51",
+                      ":hover": {
+                        backgroundColor: "#34a43c",
+                        transform: "scale(1.02)",
+                        transition: ".2s ease-out",
+                      },
+                    }}
+                    variant="contained"
+                    style={{ marginRight: "5px" }}
+                    onClick={() => connectcall(eve.meetId)}
+                  >
+                    Join
+                  </Button>
+                </AccordionSummary>
+                <AccordionDetails style={{ width: "100%" }}>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} md={9} container direction="column">
+                      <Grid item container spacing={1}>
+                        <Grid item xs={6}>
+                          <Typography>
+                            <strong>Date:</strong> {formatDate(eve.date)}
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography>
+                            <strong>Time:</strong> {eve.time}
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography>
+                            <strong>Estimated Duration:</strong> {eve.duration}
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography>
+                            <strong>Mode:</strong> {eve.mode}
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography>
+                            <strong>Organiser:</strong> {eve.organiser}
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography>
+                            <strong>Speaker:</strong> {eve.speaker}
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={12}>
+                          <Typography>
+                            <strong>Description:</strong> {eve.description}
+                          </Typography>
+                        </Grid>
                       </Grid>
                     </Grid>
+                    <Grid item xs={12} md={3}>
+                      <img
+                        src={eve.image}
+                        alt={eve.title}
+                        style={{
+                          width: "100%",
+                          height: "auto",
+                        }}
+                      />
+                    </Grid>
                   </Grid>
-                  <Grid item xs={12} md={3}>
-                    <img
-                      src={event.image}
-                      alt={event.title}
-                      style={{
-                        width: "100%",
-                        height: "auto",
-                      }}
-                    />
-                  </Grid>
-                </Grid>
-              </AccordionDetails>
-            </Accordion>
-          ))}
+                </AccordionDetails>
+              </Accordion>
+            ))}
         </CustomTabPanel>
       </Box>
 

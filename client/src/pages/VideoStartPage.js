@@ -23,14 +23,14 @@ export function getUrlParams(
 }
 
 export default function App() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const meetingID = urlParams.get('meetingID');
     //   const roomID = randomID(5) || getUrlParams().get('roomID');
-      const roomID = 'abcde';
+      const roomID = meetingID;
       let myMeeting = async (element) => {
      // generate Kit Token
-     console.log("data below")
-     console.log(roomID)
-        const appID = 847385967;
-     const serverSecret = "c074dbad868e208bea53e4add793bd4b";
+      const appID = 24292693;
+     const serverSecret = "8bb9b5f5c1802f9613fd994cff6bb66b";
      const kitToken =  ZegoUIKitPrebuilt.generateKitTokenForTest(appID, serverSecret, roomID,  randomID(5),  randomID(5));
      console.log("kitToken below")
      console.log(kitToken)
