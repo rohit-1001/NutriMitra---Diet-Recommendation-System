@@ -10,6 +10,7 @@ const DisplayCalories = ({ person }) => {
   ];
   const weights = [1, 0.9, 0.8, 0.6];
   const losses = ["-0 kg/week", "-0.25 kg/week", "-0.5 kg/week", "-1 kg/week"];
+  
 
   const calculateBMR = () => {
     if (person.gender === "Male") {

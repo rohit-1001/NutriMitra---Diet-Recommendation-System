@@ -12,6 +12,7 @@ const Recipes = () => {
     try {
       const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/getrecipe`, { query: search });
       setRecipes(response.data);
+      recipes.reverse();
     } catch (error) {
       console.error('Error fetching recipes:', error);
     }
