@@ -183,11 +183,13 @@ const UserForm = () => {
       }
       console.log("RECOMMENDED NUTRITION", recommended_nutrition);
       try {
-        const response = await axios.post("http://backend:8080/predict/", {
+        const response = await axios.post("http://localhost:8000/predict/", {
           nutrition_input: recommended_nutrition,
           ingredients: [],
           params: { n_neighbors: 5, return_distance: false },
         });
+
+        console.log("RESPONSE FROM RECOMMENDATION: ", response.data)
 
         generatedRecommendations.push(response.data.output);
       } catch (error) {
