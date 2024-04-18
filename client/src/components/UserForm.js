@@ -70,7 +70,6 @@ const UserForm = () => {
   // ];
   // const weights = [1, 0.9, 0.8, 0.6];
   // const losses = ["-0 kg/week", "-0.25 kg/week", "-0.5 kg/week", "-1 kg/week"];
-  
 
   const calculateBMR = () => {
     if (gender === "Male") {
@@ -139,7 +138,9 @@ const UserForm = () => {
   }, [mealsPerDay]);
 
   const generate_recommendations = async () => {
+    console.log("I am punching weight_loss here " + weight_loss);
     const total_calories = weight_loss * caloriesCalculator();
+    console.log("I am kicking here" + total_calories);
     const generatedRecommendations = [];
     for (const meal in meals_calories_perc) {
       const meal_calories = meals_calories_perc[meal] * total_calories;
@@ -183,10 +184,15 @@ const UserForm = () => {
       }
       console.log("RECOMMENDED NUTRITION", recommended_nutrition);
       try {
+        const jwtToken = localStorage.getItem('token');
         const response = await axios.post("http://localhost:8000/predict/", {
           nutrition_input: recommended_nutrition,
           ingredients: [],
-          params: { n_neighbors: 5, return_distance: false },
+          params: { n_neighbors: 5, return_distance: false }
+        }, {
+          headers: {
+            'Authorization': `Bearer ${jwtToken}`
+          }
         });
 
         console.log("RESPONSE FROM RECOMMENDATION: ", response.data)
@@ -220,13 +226,24 @@ const UserForm = () => {
     });
   };
 
-  const handleWeightLossPlanChange = (event) => {
-    const selectedIndex = event.target.selectedIndex;
-    setWeightLoss(selectedIndex);
-    const selectedValue = event.target.value;
-    setWeightLossPlan(selectedValue);
-  };
+  // const handleWeightLossPlanChange = (event) => {
+  //   console.log("SELECTED INDEX:", event.target)
+  //   const selectedIndex = event.target.selectedIndex;
+  //   setWeightLoss(selectedIndex);
+  //   const selectedValue = event.target.value;
+  //   setWeightLossPlan(selectedValue);
+  // };
 
+  const handleWeightLossPlanChange = (event) => {
+    const valueIndex = event.target.value.split(';');
+    const selectedValue = valueIndex[0]; // the plan name
+    const selectedIndex = parseInt(valueIndex[1], 10); // the index
+  
+    setWeightLossPlan(selectedValue);
+    setWeightLoss(selectedIndex);
+  
+    console.log("Selected Plan:", selectedValue, "Index:", selectedIndex);
+  };
 
   return (
     <>
@@ -305,6 +322,7 @@ const UserForm = () => {
             // onChange={(e) => setWeightLossPlan(e.target.value)}
             onChange={handleWeightLossPlanChange}
             className={classes.selectField}
+            renderValue={(selected) => `${selected.split(';')[0]}`}
           >
             {[
               "Maintain weight",
@@ -314,7 +332,7 @@ const UserForm = () => {
             ].map((plan, index) => (
               <MenuItem
                 key={index}
-                value={plan}
+                value={`${plan};${index}`}
                 className={classes.selectField}
               >
                 {plan}
