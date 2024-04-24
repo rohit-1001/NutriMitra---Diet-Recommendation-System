@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import "../../src/App.css";
 import BMICalculator from "./BMICalculator";
 import DisplayCalories from "./DisplayCalories";
+import DisplayRecommendations from "./DisplayRecommendations";
 import axios from "axios";
 import {
   TextField,
@@ -59,8 +60,10 @@ const UserForm = () => {
   const [meals_calories_perc, setMealCalories] = useState({});
   const [weight_loss, setWeightLoss] = useState(0);
   const [recommendations, setRecommendations] = useState([]);
+  const [requiredCalories, setRequiredCalories] = useState(0);
 
   const [show, setShow] = useState(false);
+  const w = [1, 0.9, 0.8, 0.6];
 
   // const plans = [
   //   "Maintain weight",
@@ -195,7 +198,7 @@ const UserForm = () => {
           }
         });
 
-        console.log("RESPONSE FROM RECOMMENDATION: ", response.data)
+        console.log("RESPONSE FROM RECOMMENDATION: ", response.data.output)
 
         generatedRecommendations.push(response.data.output);
       } catch (error) {
@@ -207,7 +210,9 @@ const UserForm = () => {
     //     recipe["image_link"] = find_image(recipe["Name"]);
     //   });
     // });
-    setRecommendations(recommendations);
+    
+    setRecommendations(generatedRecommendations);
+    console.log("requiredCalories : ",requiredCalories)
   };
 
   const handleSubmit = (event) => {
@@ -235,14 +240,18 @@ const UserForm = () => {
   // };
 
   const handleWeightLossPlanChange = (event) => {
+    setShow(false);
     const valueIndex = event.target.value.split(';');
     const selectedValue = valueIndex[0]; // the plan name
     const selectedIndex = parseInt(valueIndex[1], 10); // the index
   
     setWeightLossPlan(selectedValue);
     setWeightLoss(selectedIndex);
-  
+
+    
     console.log("Selected Plan:", selectedValue, "Index:", selectedIndex);
+    let val = Math.round(w[selectedIndex] * caloriesCalculator())
+    setRequiredCalories(val)
   };
 
   return (
@@ -251,7 +260,7 @@ const UserForm = () => {
         <TextField
           label="Age"
           value={age}
-          onChange={(e) => setAge(e.target.value)}
+          onChange={(e) => {setAge(e.target.value); setShow(false)}}
           fullWidth
           margin="normal"
           className={classes.textField}
@@ -259,7 +268,7 @@ const UserForm = () => {
         <TextField
           label="Height (cm)"
           value={height}
-          onChange={(e) => setHeight(e.target.value)}
+          onChange={(e) => {setHeight(e.target.value); setShow(false)}}
           fullWidth
           margin="normal"
           className={classes.textField}
@@ -267,7 +276,7 @@ const UserForm = () => {
         <TextField
           label="Weight (kg)"
           value={weight}
-          onChange={(e) => setWeight(e.target.value)}
+          onChange={(e) => {setWeight(e.target.value); setShow(false)}}
           fullWidth
           margin="normal"
           className={classes.textField}
@@ -276,7 +285,7 @@ const UserForm = () => {
           <InputLabel classes={{ root: classes.labelRoot }}>Gender</InputLabel>
           <Select
             value={gender}
-            onChange={(e) => setGender(e.target.value)}
+            onChange={(e) => {setGender(e.target.value); setShow(false)}}
             className={classes.select}
           >
             <MenuItem value="Male" className={classes.menuItem}>
@@ -293,7 +302,7 @@ const UserForm = () => {
           </InputLabel>
           <Select
             value={activityLevel}
-            onChange={(e) => setActivityLevel(e.target.value)}
+            onChange={(e) => {setActivityLevel(e.target.value); setShow(false)}}
             className={classes.select}
           >
             {[
@@ -320,7 +329,7 @@ const UserForm = () => {
           <Select
             value={weightLossPlan}
             // onChange={(e) => setWeightLossPlan(e.target.value)}
-            onChange={handleWeightLossPlanChange}
+            onChange={(e) => {handleWeightLossPlanChange(e); setShow(false)}}
             className={classes.selectField}
             renderValue={(selected) => `${selected.split(';')[0]}`}
           >
@@ -346,7 +355,7 @@ const UserForm = () => {
           </InputLabel>
           <Select
             value={mealsPerDay}
-            onChange={(e) => setMealsPerDay(e.target.value)}
+            onChange={(e) => {setMealsPerDay(e.target.value); setShow(false)}}
             className={classes.select}
           >
             {[3, 4, 5].map((meal, index) => (
@@ -396,6 +405,17 @@ const UserForm = () => {
               mealsPerDay,
             }}
           ></DisplayCalories>
+        )}
+      </div>
+      <div>
+        {show && (
+          <DisplayRecommendations
+            details={{
+              recommendations,
+              mealsPerDay,
+              requiredCalories,
+            }}
+          ></DisplayRecommendations>
         )}
       </div>
     </>
