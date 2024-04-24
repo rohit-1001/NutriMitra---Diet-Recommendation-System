@@ -3,7 +3,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
-import { PieChart } from "@mui/x-charts/PieChart";
+// import { PieChart } from "@mui/x-charts/PieChart";
 
 const style = {
   position: "absolute",
@@ -18,8 +18,16 @@ const style = {
 };
 
 const DisplayRecommendations = (props) => {
-  const { recommendations, mealsPerDay, requiredCalories, meals } =
+  const { recommendations, mealsPerDay, requiredCalories, meals, nutrition } =
     props.details;
+    let data = [];
+    nutrition.map((item) => {
+        data.push({
+            id: item.id,
+            value: item.value,
+            label: item.label,
+        });
+    });
   const [currRecipe, setCurrRecipe] = useState({});
 
   const [open, setOpen] = React.useState(false);
@@ -436,19 +444,15 @@ const DisplayRecommendations = (props) => {
           </div>
         </Box>
       </Modal>
-      <PieChart
+      {/* <PieChart
         series={[
           {
-            data: [
-              { id: 0, value: 10, label: "series A" },
-              { id: 1, value: 15, label: "series B" },
-              { id: 2, value: 20, label: "series C" },
-            ],
+            data: data
           },
         ]}
         width={400}
         height={200}
-      />
+      /> */}
     </>
   );
 };

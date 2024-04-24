@@ -64,6 +64,7 @@ const UserForm = () => {
   const [requiredCalories, setRequiredCalories] = useState(0);
   const [rsize, setRsize] = useState(0);
   const [meals, setMeals] = useState([]);
+  const [nutrition, setNutrition] = useState([]);
 
   const threeMeals = ["Breakfast", "Lunch", "Dinner"];
   const fourMeals = ["Breakfast", "Morning Snack", "Lunch", "Dinner"];
@@ -194,6 +195,7 @@ const UserForm = () => {
           rnd(30, 100),
         ];
       }
+      setNutrition(recommended_nutrition);
       console.log("RECOMMENDED NUTRITION", recommended_nutrition);
       try {
         const jwtToken = localStorage.getItem("token");
@@ -464,7 +466,8 @@ const UserForm = () => {
               recommendations,
               mealsPerDay,
               requiredCalories,
-              meals
+              meals,
+              nutrition
             }}
           ></DisplayRecommendations>
         ) : (
