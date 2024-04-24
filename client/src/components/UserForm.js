@@ -4,6 +4,7 @@ import BMICalculator from "./BMICalculator";
 import DisplayCalories from "./DisplayCalories";
 import DisplayRecommendations from "./DisplayRecommendations";
 import axios from "axios";
+import CircularProgress from '@mui/material/CircularProgress';
 import {
   TextField,
   Select,
@@ -61,6 +62,18 @@ const UserForm = () => {
   const [weight_loss, setWeightLoss] = useState(0);
   const [recommendations, setRecommendations] = useState([]);
   const [requiredCalories, setRequiredCalories] = useState(0);
+  const [rsize, setRsize] = useState(0);
+  const [meals, setMeals] = useState([]);
+
+  const threeMeals = ["Breakfast", "Lunch", "Dinner"];
+  const fourMeals = ["Breakfast", "Morning Snack", "Lunch", "Dinner"];
+  const fiveMeals = [
+    "Breakfast",
+    "Morning Snack",
+    "Lunch",
+    "Afternoon Snack",
+    "Dinner",
+  ];
 
   const [show, setShow] = useState(false);
   const w = [1, 0.9, 0.8, 0.6];
@@ -77,10 +90,7 @@ const UserForm = () => {
   const calculateBMR = () => {
     if (gender === "Male") {
       return (
-        10 * parseInt(weight) +
-        6.25 * parseInt(height) -
-        5 * parseInt(age) +
-        5
+        10 * parseInt(weight) + 6.25 * parseInt(height) - 5 * parseInt(age) + 5
       );
     } else {
       return (
@@ -112,7 +122,6 @@ const UserForm = () => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   };
 
-
   useEffect(() => {
     if (mealsPerDay === 3) {
       setMealCalories({
@@ -137,7 +146,7 @@ const UserForm = () => {
       });
     }
 
-    console.log("MEALS Calories setted")
+    console.log("MEALS Calories setted");
   }, [mealsPerDay]);
 
   const generate_recommendations = async () => {
@@ -187,18 +196,22 @@ const UserForm = () => {
       }
       console.log("RECOMMENDED NUTRITION", recommended_nutrition);
       try {
-        const jwtToken = localStorage.getItem('token');
-        const response = await axios.post("http://localhost:8000/predict", {
-          nutrition_input: recommended_nutrition,
-          ingredients: [],
-          params: { n_neighbors: 5, return_distance: false }
-        }, {
-          headers: {
-            'Authorization': `Bearer ${jwtToken}`
+        const jwtToken = localStorage.getItem("token");
+        const response = await axios.post(
+          "http://localhost:8000/predict",
+          {
+            nutrition_input: recommended_nutrition,
+            ingredients: [],
+            params: { n_neighbors: 5, return_distance: false },
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${jwtToken}`,
+            },
           }
-        });
+        );
 
-        console.log("RESPONSE FROM RECOMMENDATION: ", response.data.output)
+        console.log("RESPONSE FROM RECOMMENDATION: ", response.data.output);
 
         generatedRecommendations.push(response.data.output);
       } catch (error) {
@@ -210,9 +223,10 @@ const UserForm = () => {
     //     recipe["image_link"] = find_image(recipe["Name"]);
     //   });
     // });
-    
+
     setRecommendations(generatedRecommendations);
-    console.log("requiredCalories : ",requiredCalories)
+    setRsize(generatedRecommendations.length);
+    console.log("requiredCalories : ", requiredCalories);
   };
 
   const handleSubmit = (event) => {
@@ -229,6 +243,15 @@ const UserForm = () => {
       weightLossPlan,
       mealsPerDay,
     });
+    if(mealsPerDay === 3) {
+      setMeals(threeMeals);
+    }
+    else if(mealsPerDay === 4) {
+      setMeals(fourMeals);
+    }
+    else {
+      setMeals(fiveMeals);
+    }
   };
 
   // const handleWeightLossPlanChange = (event) => {
@@ -241,17 +264,16 @@ const UserForm = () => {
 
   const handleWeightLossPlanChange = (event) => {
     setShow(false);
-    const valueIndex = event.target.value.split(';');
+    const valueIndex = event.target.value.split(";");
     const selectedValue = valueIndex[0]; // the plan name
     const selectedIndex = parseInt(valueIndex[1], 10); // the index
-  
+
     setWeightLossPlan(selectedValue);
     setWeightLoss(selectedIndex);
 
-    
     console.log("Selected Plan:", selectedValue, "Index:", selectedIndex);
-    let val = Math.round(w[selectedIndex] * caloriesCalculator())
-    setRequiredCalories(val)
+    let val = Math.round(w[selectedIndex] * caloriesCalculator());
+    setRequiredCalories(val);
   };
 
   return (
@@ -260,7 +282,11 @@ const UserForm = () => {
         <TextField
           label="Age"
           value={age}
-          onChange={(e) => {setAge(e.target.value); setShow(false)}}
+          onChange={(e) => {
+            setAge(e.target.value);
+            setShow(false);
+            setRsize(0);
+          }}
           fullWidth
           margin="normal"
           className={classes.textField}
@@ -268,7 +294,11 @@ const UserForm = () => {
         <TextField
           label="Height (cm)"
           value={height}
-          onChange={(e) => {setHeight(e.target.value); setShow(false)}}
+          onChange={(e) => {
+            setHeight(e.target.value);
+            setShow(false);
+            setRsize(0);
+          }}
           fullWidth
           margin="normal"
           className={classes.textField}
@@ -276,7 +306,11 @@ const UserForm = () => {
         <TextField
           label="Weight (kg)"
           value={weight}
-          onChange={(e) => {setWeight(e.target.value); setShow(false)}}
+          onChange={(e) => {
+            setWeight(e.target.value);
+            setShow(false);
+            setRsize(0);
+          }}
           fullWidth
           margin="normal"
           className={classes.textField}
@@ -285,7 +319,11 @@ const UserForm = () => {
           <InputLabel classes={{ root: classes.labelRoot }}>Gender</InputLabel>
           <Select
             value={gender}
-            onChange={(e) => {setGender(e.target.value); setShow(false)}}
+            onChange={(e) => {
+              setGender(e.target.value);
+              setShow(false);
+              setRsize(0);
+            }}
             className={classes.select}
           >
             <MenuItem value="Male" className={classes.menuItem}>
@@ -302,7 +340,11 @@ const UserForm = () => {
           </InputLabel>
           <Select
             value={activityLevel}
-            onChange={(e) => {setActivityLevel(e.target.value); setShow(false)}}
+            onChange={(e) => {
+              setActivityLevel(e.target.value);
+              setShow(false);
+              setRsize(0);
+            }}
             className={classes.select}
           >
             {[
@@ -329,9 +371,13 @@ const UserForm = () => {
           <Select
             value={weightLossPlan}
             // onChange={(e) => setWeightLossPlan(e.target.value)}
-            onChange={(e) => {handleWeightLossPlanChange(e); setShow(false)}}
+            onChange={(e) => {
+              handleWeightLossPlanChange(e);
+              setShow(false);
+              setRsize(0);
+            }}
             className={classes.selectField}
-            renderValue={(selected) => `${selected.split(';')[0]}`}
+            renderValue={(selected) => `${selected.split(";")[0]}`}
           >
             {[
               "Maintain weight",
@@ -355,7 +401,11 @@ const UserForm = () => {
           </InputLabel>
           <Select
             value={mealsPerDay}
-            onChange={(e) => {setMealsPerDay(e.target.value); setShow(false)}}
+            onChange={(e) => {
+              setMealsPerDay(e.target.value);
+              setShow(false);
+              setRsize(0);
+            }}
             className={classes.select}
           >
             {[3, 4, 5].map((meal, index) => (
@@ -408,15 +458,22 @@ const UserForm = () => {
         )}
       </div>
       <div>
-        {show && (
+        {show && rsize > 0 ? (
           <DisplayRecommendations
             details={{
               recommendations,
               mealsPerDay,
               requiredCalories,
+              meals
             }}
           ></DisplayRecommendations>
-        )}
+        ) : (
+          show && (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '20px' }}>
+            <CircularProgress color="success" style={{ marginRight: '10px' }} />
+            <span>Loading Recommendations...</span>
+          </div>
+        ))}
       </div>
     </>
   );
