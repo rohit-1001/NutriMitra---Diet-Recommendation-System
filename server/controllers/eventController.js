@@ -30,8 +30,10 @@ const createEvent = async (req, res) => {
 
 const getEvents = async (req, res) => {
     try {
+        const today = new Date();
         const events = await Event.find();
-        res.status(200).json(events);
+        const evnts = events.filter(obj => obj.date >= today);
+        res.status(200).json(evnts);
     } catch (error) {
         res.status(500).json({ error: 'Failed to fetch events' });
     }

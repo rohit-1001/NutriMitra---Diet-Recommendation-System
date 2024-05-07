@@ -3,7 +3,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
-// import { PieChart } from "@mui/x-charts/PieChart";
+import { PieChart } from "@mui/x-charts/PieChart";
 
 const style = {
   position: "absolute",
@@ -447,7 +447,11 @@ const DisplayRecommendations = (props) => {
       {/* <PieChart
         series={[
           {
-            data: data
+            data: [
+              { id: 0, value: 10, label: "series A" },
+              { id: 1, value: 15, label: "series B" },
+              { id: 2, value: 20, label: "series C" },
+            ],
           },
         ]}
         width={400}
