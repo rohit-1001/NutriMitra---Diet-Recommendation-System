@@ -33,6 +33,7 @@ const DisplayRecommendations = (props) => {
   const [open, setOpen] = React.useState(false);
   const handleOpen = (recipe) => {
     setCurrRecipe(recipe);
+    console.log(recipe);
     setOpen(true);
   };
   const handleClose = () => {
@@ -441,6 +442,9 @@ const DisplayRecommendations = (props) => {
                 </tr>
               </tbody>
             </table>
+          </div>
+          <div>
+
           </div>
         </Box>
       </Modal>
