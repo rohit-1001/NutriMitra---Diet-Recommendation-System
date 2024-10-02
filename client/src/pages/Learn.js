@@ -6,6 +6,11 @@ import Box from "@mui/material/Box";
 import { toast } from "react-toastify";
 import axios from "axios";
 import DynamicEmoji from "../components/DynamicEmoji";
+import Fab from "@mui/material/Fab";
+import AddIcon from "@mui/icons-material/Add";
+import EditIcon from "@mui/icons-material/Edit";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import NavigationIcon from "@mui/icons-material/Navigation";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -90,32 +95,34 @@ const Learn = () => {
       const role = localStorage.getItem("role");
       if (role === "user") {
         setNoCourseLine(
-          <h2 style={{ 
-            fontWeight: "600", 
-            textAlign: "center", 
-            color: "#4CAF50", 
-            margin: "20px 0", 
-            fontFamily: "Arial, sans-serif", 
-          }}>
+          <h2
+            style={{
+              fontWeight: "600",
+              textAlign: "center",
+              color: "#4CAF50",
+              margin: "20px 0",
+              fontFamily: "Arial, sans-serif",
+            }}
+          >
             No courses purchased yet <DynamicEmoji />
           </h2>
         );
       } else if (role === "expert") {
         setNoCourseLine(
-          <h2 style={{ 
-            fontWeight: "600", 
-            textAlign: "center", 
-            color: "#4CAF50", 
-            margin: "20px 0", 
-            fontFamily: "Arial, sans-serif", 
-          }}>
+          <h2
+            style={{
+              fontWeight: "600",
+              textAlign: "center",
+              color: "#4CAF50",
+              margin: "20px 0",
+              fontFamily: "Arial, sans-serif",
+            }}
+          >
             No courses created yet <DynamicEmoji />
           </h2>
         );
       }
-      
-      
-      
+
       let mycourses = [];
       if (role === "expert") {
         getMyCourses();
@@ -135,6 +142,7 @@ const Learn = () => {
 
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   const handleCardClick = (course) => {
     setSelectedCourse(course);
@@ -261,6 +269,67 @@ const Learn = () => {
 
   return (
     <>
+      <Box
+        sx={{
+          position: "fixed",
+          bottom: 16,
+          right: 16,
+        }}
+      >
+        <div
+          style={{
+            position: "relative",
+            display: "inline-block",
+          }}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          {/* The Slider */}
+          <span
+            style={{
+              position: "absolute",
+              right: 0, 
+              bottom: 0,
+              height: 56,
+              width: isHovered ? "200px" : "56px",
+              backgroundColor: "#388E3C",
+              borderRadius: "28px", 
+              color: "#fff",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: isHovered ? "flex-start" : "center",
+              paddingLeft: isHovered ? "20px" : "0",
+              whiteSpace: "nowrap",
+              transition: "width 0.3s ease, padding-left 0.3s ease",
+              overflow: "hidden",
+            }}
+          >
+            {isHovered ? "Create Course" : ""}
+          </span>
+
+          {/* The Floating Button */}
+          <Fab
+            sx={{
+              width: 56,
+              height: 56, 
+              backgroundColor: "#81C784", 
+              zIndex: 1,
+              position: "relative",
+              "&:hover": {
+                backgroundColor: "#388E3C",
+              },
+            }}
+            aria-label="add"
+          >
+            <AddIcon
+              sx={{
+                color: isHovered ? "#fff" : "#000",
+                transition: "color 0.3s ease",
+              }}
+            />
+          </Fab>
+        </div>
+      </Box>
       <Box sx={{ width: "100%" }}>
         <Box
           sx={{
@@ -291,6 +360,7 @@ const Learn = () => {
             <Tab label="My Courses" {...a11yProps(1)} />
           </Tabs>
         </Box>
+
         <CustomTabPanel value={value} index={0}>
           <div>
             {/* Display course cards */}
@@ -398,38 +468,36 @@ const Learn = () => {
           <div>
             {/* Display course cards */}
             <div style={styles.container}>
-              {mycourses.length === 0 ? (
-                noCourseLine
-              ) : (
-                mycourses.map((course, index) => (
-                  <div
-                    key={index}
-                    style={styles.card}
-                    onClick={() => handleCardClick(course)}
-                    onMouseEnter={(e) =>
-                      (e.currentTarget.style.boxShadow =
-                        "0 8px 16px rgba(0, 0, 0, 0.2)")
-                    }
-                    onMouseLeave={(e) =>
-                      (e.currentTarget.style.boxShadow =
-                        "0 4px 8px rgba(0, 0, 0, 0.1)")
-                    }
-                  >
-                    <img
-                      src={course.image}
-                      alt={course.title}
-                      style={styles.cardImage}
-                    />
-                    <h3 style={styles.cardTitle}>{course.title}</h3>
-                    <p style={styles.description}>
-                      {truncateDescription(course.description, 20)}
-                    </p>
-                    <p style={styles.price}>
-                      <strong>Price:</strong> ${course.price}
-                    </p>
-                  </div>
-                ))
-              )}
+              {mycourses.length === 0
+                ? noCourseLine
+                : mycourses.map((course, index) => (
+                    <div
+                      key={index}
+                      style={styles.card}
+                      onClick={() => handleCardClick(course)}
+                      onMouseEnter={(e) =>
+                        (e.currentTarget.style.boxShadow =
+                          "0 8px 16px rgba(0, 0, 0, 0.2)")
+                      }
+                      onMouseLeave={(e) =>
+                        (e.currentTarget.style.boxShadow =
+                          "0 4px 8px rgba(0, 0, 0, 0.1)")
+                      }
+                    >
+                      <img
+                        src={course.image}
+                        alt={course.title}
+                        style={styles.cardImage}
+                      />
+                      <h3 style={styles.cardTitle}>{course.title}</h3>
+                      <p style={styles.description}>
+                        {truncateDescription(course.description, 20)}
+                      </p>
+                      <p style={styles.price}>
+                        <strong>Price:</strong> ${course.price}
+                      </p>
+                    </div>
+                  ))}
             </div>
 
             {/* Modal for detailed course info */}
