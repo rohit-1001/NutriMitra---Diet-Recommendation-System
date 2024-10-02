@@ -9,13 +9,10 @@ const createCourse = async (req, res) => {
             image, 
             creatorName, 
             creatorEmail, 
-            authors, 
-            duration, 
+            authors,
             language, 
             index, 
-            price, 
-            startDate, 
-            endDate 
+            price
         } = req.body;
 
         let courseData = {};
@@ -26,12 +23,9 @@ const createCourse = async (req, res) => {
                 creatorName, 
                 creatorEmail, 
                 authors, 
-                duration, 
                 language, 
                 index, 
-                price, 
-                startDate, 
-                endDate
+                price
             }
         }
         else{
@@ -41,13 +35,10 @@ const createCourse = async (req, res) => {
                 image, 
                 creatorName, 
                 creatorEmail, 
-                authors, 
-                duration, 
+                authors,
                 language, 
                 index, 
-                price, 
-                startDate, 
-                endDate
+                price
             }
         }
 
@@ -80,4 +71,19 @@ const buyCourse = async (req, res) => {
     }
 }
 
-module.exports = { createCourse, getCourse, buyCourse };
+const getMyCourses = async (req, res) => {
+    try {
+        const email = req.email;
+        const myCourses = await BuyCourse.find({ email: email });
+        let myCoursesInfo = [];
+        for(let i = 0; i < myCourses.length; i++) {
+            myCoursesInfo.push(await Course.findById(myCourses[i].id));
+        }
+        res.status(200).json({ myCourses : myCoursesInfo });
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Failed to fetch courses' });
+    }
+}
+
+module.exports = { createCourse, getCourse, buyCourse, getMyCourses };

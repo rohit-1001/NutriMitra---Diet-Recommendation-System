@@ -5,6 +5,7 @@ import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
 import { toast } from "react-toastify";
 import axios from "axios";
+import DynamicEmoji from "../components/DynamicEmoji";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -50,6 +51,29 @@ const Learn = () => {
     setValue(newValue);
   };
 
+  const getMyCourses = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/getMyCourses`,
+        { email: localStorage.getItem("email") },
+        {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        }
+      );
+      const data = res.data;
+      setMyCourses(data.myCourses);
+    } catch (error) {
+      if (error.response && error.response.data) {
+        toast.error(error.response.data.error);
+      }
+    }
+  };
+
+  const [noCourseLine, setNoCourseLine] = useState(null);
+
   const getAllCourses = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -63,7 +87,44 @@ const Learn = () => {
       );
       const data = res.data;
       setCourses(data.courses);
-      let mycourses = data.courses.filter((course) => course.creatorEmail === localStorage.getItem("email"));
+      const role = localStorage.getItem("role");
+      if (role === "user") {
+        setNoCourseLine(
+          <h2 style={{ 
+            fontWeight: "600", 
+            textAlign: "center", 
+            color: "#4CAF50", 
+            margin: "20px 0", 
+            fontFamily: "Arial, sans-serif", 
+          }}>
+            No courses purchased yet <DynamicEmoji />
+          </h2>
+        );
+      } else if (role === "expert") {
+        setNoCourseLine(
+          <h2 style={{ 
+            fontWeight: "600", 
+            textAlign: "center", 
+            color: "#4CAF50", 
+            margin: "20px 0", 
+            fontFamily: "Arial, sans-serif", 
+          }}>
+            No courses created yet <DynamicEmoji />
+          </h2>
+        );
+      }
+      
+      
+      
+      let mycourses = [];
+      if (role === "expert") {
+        getMyCourses();
+        mycourses = data.courses.filter(
+          (course) => course.creatorEmail === localStorage.getItem("email")
+        );
+      } else if (role === "user") {
+        getMyCourses();
+      }
       setMyCourses(mycourses);
     } catch (error) {
       if (error.response && error.response.data) {
@@ -129,11 +190,6 @@ const Learn = () => {
     price: {
       fontSize: "16px",
       fontWeight: "bold",
-      margin: "5px 0",
-    },
-    duration: {
-      fontSize: "14px",
-      color: "#777",
       margin: "5px 0",
     },
     modal: {
@@ -265,9 +321,6 @@ const Learn = () => {
                   <p style={styles.price}>
                     <strong>Price:</strong> ${course.price}
                   </p>
-                  <p style={styles.duration}>
-                    <strong>Duration:</strong> {course.duration}
-                  </p>
                 </div>
               ))}
             </div>
@@ -304,18 +357,7 @@ const Learn = () => {
                             <strong>Language:</strong> {selectedCourse.language}
                           </p>
                           <p style={styles.detailItem}>
-                            <strong>Start Date:</strong>{" "}
-                            {new Date(selectedCourse.startDate).toDateString()}
-                          </p>
-                          <p style={styles.detailItem}>
-                            <strong>End Date:</strong>{" "}
-                            {new Date(selectedCourse.endDate).toDateString()}
-                          </p>
-                          <p style={styles.detailItem}>
                             <strong>Price:</strong> ${selectedCourse.price}
-                          </p>
-                          <p style={styles.detailItem}>
-                            <strong>Duration:</strong> {selectedCourse.duration}
                           </p>
                           <p style={styles.detailItem}>
                             <strong>Creator:</strong>{" "}
@@ -356,37 +398,38 @@ const Learn = () => {
           <div>
             {/* Display course cards */}
             <div style={styles.container}>
-              {mycourses.map((course, index) => (
-                <div
-                  key={index}
-                  style={styles.card}
-                  onClick={() => handleCardClick(course)}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.boxShadow =
-                      "0 8px 16px rgba(0, 0, 0, 0.2)")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.boxShadow =
-                      "0 4px 8px rgba(0, 0, 0, 0.1)")
-                  }
-                >
-                  <img
-                    src={course.image}
-                    alt={course.title}
-                    style={styles.cardImage}
-                  />
-                  <h3 style={styles.cardTitle}>{course.title}</h3>
-                  <p style={styles.description}>
-                    {truncateDescription(course.description, 20)}
-                  </p>
-                  <p style={styles.price}>
-                    <strong>Price:</strong> ${course.price}
-                  </p>
-                  <p style={styles.duration}>
-                    <strong>Duration:</strong> {course.duration}
-                  </p>
-                </div>
-              ))}
+              {mycourses.length === 0 ? (
+                noCourseLine
+              ) : (
+                mycourses.map((course, index) => (
+                  <div
+                    key={index}
+                    style={styles.card}
+                    onClick={() => handleCardClick(course)}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.boxShadow =
+                        "0 8px 16px rgba(0, 0, 0, 0.2)")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.boxShadow =
+                        "0 4px 8px rgba(0, 0, 0, 0.1)")
+                    }
+                  >
+                    <img
+                      src={course.image}
+                      alt={course.title}
+                      style={styles.cardImage}
+                    />
+                    <h3 style={styles.cardTitle}>{course.title}</h3>
+                    <p style={styles.description}>
+                      {truncateDescription(course.description, 20)}
+                    </p>
+                    <p style={styles.price}>
+                      <strong>Price:</strong> ${course.price}
+                    </p>
+                  </div>
+                ))
+              )}
             </div>
 
             {/* Modal for detailed course info */}
@@ -421,18 +464,7 @@ const Learn = () => {
                             <strong>Language:</strong> {selectedCourse.language}
                           </p>
                           <p style={styles.detailItem}>
-                            <strong>Start Date:</strong>{" "}
-                            {new Date(selectedCourse.startDate).toDateString()}
-                          </p>
-                          <p style={styles.detailItem}>
-                            <strong>End Date:</strong>{" "}
-                            {new Date(selectedCourse.endDate).toDateString()}
-                          </p>
-                          <p style={styles.detailItem}>
                             <strong>Price:</strong> ${selectedCourse.price}
-                          </p>
-                          <p style={styles.detailItem}>
-                            <strong>Duration:</strong> {selectedCourse.duration}
                           </p>
                           <p style={styles.detailItem}>
                             <strong>Creator:</strong>{" "}

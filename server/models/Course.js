@@ -26,10 +26,6 @@ const courseSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  duration : {
-    type: String,
-    required: true
-  },
   language : {
     type: String,
     required: true
@@ -41,14 +37,6 @@ const courseSchema = new mongoose.Schema({
   price : {
     type: Number,
     required: true
-  },
-  startDate: {
-    type: Date,
-    required: true,
-  },
-  endDate: {
-    type: Date,
-    required: true,
   },
 });
 
