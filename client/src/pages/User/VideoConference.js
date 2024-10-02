@@ -1,8 +1,12 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Button from '@mui/material/Button'
 import { useNavigate } from 'react-router-dom'
 
 const VideoConference = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    window.document.title = "Video Conference | NutriMitra";
+  }, []);
   const navigate = useNavigate();
   const connectcall =  () => {
     navigate("/startcall");

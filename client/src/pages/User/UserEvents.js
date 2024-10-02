@@ -34,6 +34,8 @@ export default function UserEvents(props) {
     }
   };
   useEffect(() => {
+    window.scrollTo(0, 0);
+    window.document.title = "Events | NutriMitra";
     setLoaded(false);
     getAllEvents();
     setLoaded(true);

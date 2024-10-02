@@ -16,6 +16,7 @@ app.use(require('./routes/auth'));
 app.use(require('./routes/blog'));
 app.use(require('./routes/recipiroute'));
 app.use(require('./routes/event'));
+app.use(require('./routes/course'));
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

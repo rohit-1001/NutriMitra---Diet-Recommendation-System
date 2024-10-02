@@ -1,10 +1,15 @@
-import React, {useState} from "react";
+import React, { useState, useEffect } from "react";
 import "../../css_files/login.css";
 import { toast } from "react-toastify";
 import axios from "axios";
 const {useNavigate} = require("react-router-dom");
 
 const Login = (props) => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    window.document.title = "Login/Signup | NutriMitra";
+  }, []);
+
   const { role, setRole } = props.details;
   const [login, setLogin] = useState({
     email: "",

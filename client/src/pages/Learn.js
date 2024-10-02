@@ -1,98 +1,76 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import Box from "@mui/material/Box";
+import { toast } from "react-toastify";
+import axios from "axios";
+
+function CustomTabPanel(props) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
+    </div>
+  );
+}
+
+CustomTabPanel.propTypes = {
+  children: PropTypes.node,
+  index: PropTypes.number.isRequired,
+  value: PropTypes.number.isRequired,
+};
+
+function a11yProps(index) {
+  return {
+    id: `simple-tab-${index}`,
+    "aria-controls": `simple-tabpanel-${index}`,
+  };
+}
 
 const Learn = () => {
-  const courses = [
-    {
-      title: "Full-Stack Development",
-      description:
-        "Learn to build full-stack web applications using the MERN stack. This course will cover backend, frontend, and everything in between.",
-      image: "https://via.placeholder.com/250",
-      creatorName: "John Doe",
-      creatorEmail: "john@example.com",
-      authors: "John Doe",
-      duration: "10 weeks",
-      language: "English",
-      index: ["1. Introduction", "2. Backend", "3. Frontend"],
-      price: 199,
-      startDate: new Date("2024-01-10"),
-      endDate: new Date("2024-04-10"),
-    },
-    {
-      title: "Data Science",
-      description:
-        "An introduction to data science concepts, tools, and techniques. You will learn data analysis, visualization, and machine learning.",
-      image: "https://via.placeholder.com/250",
-      creatorName: "Jane Smith",
-      creatorEmail: "jane@example.com",
-      authors: "Jane Smith",
-      duration: "12 weeks",
-      language: "English",
-      index: ["1. Data Cleaning", "2. Data Analysis", "3. Machine Learning"],
-      price: 299,
-      startDate: new Date("2024-02-01"),
-      endDate: new Date("2024-05-01"),
-    },
-    {
-      title: "AI and Machine Learning",
-      description:
-        "Explore the world of AI and machine learning in this advanced course. Dive into neural networks and deep learning techniques.",
-      image: "https://via.placeholder.com/250",
-      creatorName: "Alice Brown",
-      creatorEmail: "alice@example.com",
-      authors: "Alice Brown",
-      duration: "15 weeks",
-      language: "English",
-      index: ["1. Neural Networks", "2. Deep Learning", "3. Model Deployment"],
-      price: 399,
-      startDate: new Date("2024-03-01"),
-      endDate: new Date("2024-06-15"),
-    },
-    {
-      title: "AI and Machine Learning",
-      description:
-        "Explore the world of AI and machine learning in this advanced course. Dive into neural networks and deep learning techniques.",
-      image: "https://via.placeholder.com/250",
-      creatorName: "Alice Brown",
-      creatorEmail: "alice@example.com",
-      authors: "Alice Brown",
-      duration: "15 weeks",
-      language: "English",
-      index: ["1. Neural Networks", "2. Deep Learning", "3. Model Deployment"],
-      price: 399,
-      startDate: new Date("2024-03-01"),
-      endDate: new Date("2024-06-15"),
-    },
-    {
-      title: "AI and Machine Learning",
-      description:
-        "Explore the world of AI and machine learning in this advanced course. Dive into neural networks and deep learning techniques.",
-      image: "https://via.placeholder.com/250",
-      creatorName: "Alice Brown",
-      creatorEmail: "alice@example.com",
-      authors: "Alice Brown",
-      duration: "15 weeks",
-      language: "English",
-      index: ["1. Neural Networks", "2. Deep Learning", "3. Model Deployment"],
-      price: 399,
-      startDate: new Date("2024-03-01"),
-      endDate: new Date("2024-06-15"),
-    },
-    {
-      title: "AI and Machine Learning",
-      description:
-        "Explore the world of AI and machine learning in this advanced course. Dive into neural networks and deep learning techniques.",
-      image: "https://via.placeholder.com/250",
-      creatorName: "Alice Brown",
-      creatorEmail: "alice@example.com",
-      authors: "Alice Brown",
-      duration: "15 weeks",
-      language: "English",
-      index: ["1. Neural Networks", "2. Deep Learning", "3. Model Deployment"],
-      price: 399,
-      startDate: new Date("2024-03-01"),
-      endDate: new Date("2024-06-15"),
-    },
-  ];
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    window.document.title = "Learn | NutriMitra";
+    getAllCourses();
+  }, []);
+
+  const [value, setValue] = React.useState(0);
+  const [courses, setCourses] = useState([]);
+  const [mycourses, setMyCourses] = useState([]);
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
+
+  const getAllCourses = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/getCourse`,
+        {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        }
+      );
+      const data = res.data;
+      setCourses(data.courses);
+      let mycourses = data.courses.filter((course) => course.creatorEmail === localStorage.getItem("email"));
+      setMyCourses(mycourses);
+    } catch (error) {
+      if (error.response && error.response.data) {
+        toast.error(error.response.data.error);
+      }
+    }
+  };
 
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -170,15 +148,15 @@ const Learn = () => {
       backgroundColor: "rgba(0, 0, 0, 0.5)",
     },
     modalContent: {
-        backgroundColor: "white",
-        padding: "25px",
-        borderRadius: "10px",
-        width: "80%",
-        maxWidth: "1000px",
-        maxHeight: "80vh",
-        overflowY: "auto",
-        position: "relative",
-      },
+      backgroundColor: "white",
+      padding: "25px",
+      borderRadius: "10px",
+      width: "80%",
+      maxWidth: "1000px",
+      maxHeight: "80vh",
+      overflowY: "auto",
+      position: "relative",
+    },
     closeButton: {
       position: "absolute",
       top: "10px",
@@ -187,10 +165,10 @@ const Learn = () => {
       cursor: "pointer",
     },
     horizontalRow: {
-        display: "flex",
-        justifyContent: "space-between",
-        marginTop: "20px",
-      },
+      display: "flex",
+      justifyContent: "space-between",
+      marginTop: "20px",
+    },
     column: {
       width: "47%",
       padding: "10px",
@@ -218,129 +196,280 @@ const Learn = () => {
       backgroundColor: "#ddd",
     },
     divider: {
-        width: "1px",
-        backgroundColor: "#ddd",
-        alignSelf: "stretch",
-        margin: "0 20px",
-      },
+      width: "1px",
+      backgroundColor: "#ddd",
+      alignSelf: "stretch",
+      margin: "0 20px",
+    },
   };
 
   return (
     <>
-      <div>
-        {/* Display course cards */}
-        <div style={styles.container}>
-          {courses.map((course, index) => (
-            <div
-              key={index}
-              style={styles.card}
-              onClick={() => handleCardClick(course)}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.boxShadow =
-                  "0 8px 16px rgba(0, 0, 0, 0.2)")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.boxShadow =
-                  "0 4px 8px rgba(0, 0, 0, 0.1)")
-              }
-            >
-              <img
-                src={course.image}
-                alt={course.title}
-                style={styles.cardImage}
-              />
-              <h3 style={styles.cardTitle}>{course.title}</h3>
-              <p style={styles.description}>
-                {truncateDescription(course.description, 20)}
-              </p>
-              <p style={styles.price}>
-                <strong>Price:</strong> ${course.price}
-              </p>
-              <p style={styles.duration}>
-                <strong>Duration:</strong> {course.duration}
-              </p>
-            </div>
-          ))}
-        </div>
-
-        {/* Modal for detailed course info */}
-        {showModal && selectedCourse && (
-          <div style={styles.modal} onClick={closeModal}>
-            <div
-              style={styles.modalContent}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <span style={styles.closeButton} onClick={closeModal}>
-                &times;
-              </span>
-              <h2>{selectedCourse.title}</h2>
-
-              {/* Horizontal layout for modal */}
-              <div style={styles.horizontalRow}>
-                {/* First column with image and details */}
-                <div style={styles.column}>
-                  <div style={styles.detailRow}>
-                    <div style={styles.imageContainer}>
-                      <img
-                        src={selectedCourse.image}
-                        alt={selectedCourse.title}
-                        style={styles.cardImage}
-                      />
-                    </div>
-                    <div>
-                      <p style={styles.detailItem}>
-                        <strong>Authors:</strong> {selectedCourse.authors}
-                      </p>
-                      <p style={styles.detailItem}>
-                        <strong>Language:</strong> {selectedCourse.language}
-                      </p>
-                      <p style={styles.detailItem}>
-                        <strong>Start Date:</strong>{" "}
-                        {selectedCourse.startDate.toDateString()}
-                      </p>
-                      <p style={styles.detailItem}>
-                        <strong>End Date:</strong>{" "}
-                        {selectedCourse.endDate.toDateString()}
-                      </p>
-                      <p style={styles.detailItem}>
-                        <strong>Price:</strong> ${selectedCourse.price}
-                      </p>
-                      <p style={styles.detailItem}>
-                        <strong>Duration:</strong> {selectedCourse.duration}
-                      </p>
-                      <p style={styles.detailItem}>
-                        <strong>Creator:</strong> {selectedCourse.creatorName} (
-                        {selectedCourse.creatorEmail})
-                      </p>
-                    </div>
-                  </div>
-                  {/* Description below the details */}
-                  <div style={styles.sectionDivider} />
-                  <div style={styles.descriptionContainer}>
-                    <p style={{ marginTop: "20px", fontWeight: "bold" }}>
-                      Description:
-                    </p>
-                    <p>{selectedCourse.description}</p>
-                  </div>
+      <Box sx={{ width: "100%" }}>
+        <Box
+          sx={{
+            borderBottom: 1,
+            borderColor: "divider",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Tabs
+            value={value}
+            onChange={handleChange}
+            sx={{
+              "& .MuiTabs-indicator": {
+                backgroundColor: "darkgreen",
+              },
+              "& .MuiTab-root": {
+                color: "green",
+                "&.Mui-selected": {
+                  color: "darkgreen",
+                },
+              },
+            }}
+            aria-label="basic tabs example"
+          >
+            <Tab label="All Courses" {...a11yProps(0)} />
+            <Tab label="My Courses" {...a11yProps(1)} />
+          </Tabs>
+        </Box>
+        <CustomTabPanel value={value} index={0}>
+          <div>
+            {/* Display course cards */}
+            <div style={styles.container}>
+              {courses.map((course, index) => (
+                <div
+                  key={index}
+                  style={styles.card}
+                  onClick={() => handleCardClick(course)}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.boxShadow =
+                      "0 8px 16px rgba(0, 0, 0, 0.2)")
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.boxShadow =
+                      "0 4px 8px rgba(0, 0, 0, 0.1)")
+                  }
+                >
+                  <img
+                    src={course.image}
+                    alt={course.title}
+                    style={styles.cardImage}
+                  />
+                  <h3 style={styles.cardTitle}>{course.title}</h3>
+                  <p style={styles.description}>
+                    {truncateDescription(course.description, 20)}
+                  </p>
+                  <p style={styles.price}>
+                    <strong>Price:</strong> ${course.price}
+                  </p>
+                  <p style={styles.duration}>
+                    <strong>Duration:</strong> {course.duration}
+                  </p>
                 </div>
+              ))}
+            </div>
 
-                {/* Vertical Divider */}
-                <div style={styles.divider}></div>
+            {/* Modal for detailed course info */}
+            {showModal && selectedCourse && (
+              <div style={styles.modal} onClick={closeModal}>
+                <div
+                  style={styles.modalContent}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <span style={styles.closeButton} onClick={closeModal}>
+                    &times;
+                  </span>
+                  <h2>{selectedCourse.title}</h2>
 
-                {/* Second column with course index */}
-                <div style={styles.column}>
-                  <strong>Course Index:</strong>
-                  <ul>
-                    {selectedCourse.index.map((item, idx) => (
-                      <li key={idx}>{item}</li>
-                    ))}
-                  </ul>
+                  {/* Horizontal layout for modal */}
+                  <div style={styles.horizontalRow}>
+                    {/* First column with image and details */}
+                    <div style={styles.column}>
+                      <div style={styles.detailRow}>
+                        <div style={styles.imageContainer}>
+                          <img
+                            src={selectedCourse.image}
+                            alt={selectedCourse.title}
+                            style={styles.cardImage}
+                          />
+                        </div>
+                        <div>
+                          <p style={styles.detailItem}>
+                            <strong>Authors:</strong> {selectedCourse.authors}
+                          </p>
+                          <p style={styles.detailItem}>
+                            <strong>Language:</strong> {selectedCourse.language}
+                          </p>
+                          <p style={styles.detailItem}>
+                            <strong>Start Date:</strong>{" "}
+                            {new Date(selectedCourse.startDate).toDateString()}
+                          </p>
+                          <p style={styles.detailItem}>
+                            <strong>End Date:</strong>{" "}
+                            {new Date(selectedCourse.endDate).toDateString()}
+                          </p>
+                          <p style={styles.detailItem}>
+                            <strong>Price:</strong> ${selectedCourse.price}
+                          </p>
+                          <p style={styles.detailItem}>
+                            <strong>Duration:</strong> {selectedCourse.duration}
+                          </p>
+                          <p style={styles.detailItem}>
+                            <strong>Creator:</strong>{" "}
+                            {selectedCourse.creatorName} (
+                            {selectedCourse.creatorEmail})
+                          </p>
+                        </div>
+                      </div>
+                      {/* Description below the details */}
+                      <div style={styles.sectionDivider} />
+                      <div style={styles.descriptionContainer}>
+                        <p style={{ marginTop: "20px", fontWeight: "bold" }}>
+                          Description:
+                        </p>
+                        <p>{selectedCourse.description}</p>
+                      </div>
+                    </div>
+
+                    {/* Vertical Divider */}
+                    <div style={styles.divider}></div>
+
+                    {/* Second column with course index */}
+                    <div style={styles.column}>
+                      <strong>Course Index:</strong>
+                      <ul>
+                        {selectedCourse.index.map((item, idx) => (
+                          <li key={idx}>{item}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
-        )}
-      </div>
+        </CustomTabPanel>
+        <CustomTabPanel value={value} index={1}>
+          <div>
+            {/* Display course cards */}
+            <div style={styles.container}>
+              {mycourses.map((course, index) => (
+                <div
+                  key={index}
+                  style={styles.card}
+                  onClick={() => handleCardClick(course)}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.boxShadow =
+                      "0 8px 16px rgba(0, 0, 0, 0.2)")
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.boxShadow =
+                      "0 4px 8px rgba(0, 0, 0, 0.1)")
+                  }
+                >
+                  <img
+                    src={course.image}
+                    alt={course.title}
+                    style={styles.cardImage}
+                  />
+                  <h3 style={styles.cardTitle}>{course.title}</h3>
+                  <p style={styles.description}>
+                    {truncateDescription(course.description, 20)}
+                  </p>
+                  <p style={styles.price}>
+                    <strong>Price:</strong> ${course.price}
+                  </p>
+                  <p style={styles.duration}>
+                    <strong>Duration:</strong> {course.duration}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            {/* Modal for detailed course info */}
+            {showModal && selectedCourse && (
+              <div style={styles.modal} onClick={closeModal}>
+                <div
+                  style={styles.modalContent}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <span style={styles.closeButton} onClick={closeModal}>
+                    &times;
+                  </span>
+                  <h2>{selectedCourse.title}</h2>
+
+                  {/* Horizontal layout for modal */}
+                  <div style={styles.horizontalRow}>
+                    {/* First column with image and details */}
+                    <div style={styles.column}>
+                      <div style={styles.detailRow}>
+                        <div style={styles.imageContainer}>
+                          <img
+                            src={selectedCourse.image}
+                            alt={selectedCourse.title}
+                            style={styles.cardImage}
+                          />
+                        </div>
+                        <div>
+                          <p style={styles.detailItem}>
+                            <strong>Authors:</strong> {selectedCourse.authors}
+                          </p>
+                          <p style={styles.detailItem}>
+                            <strong>Language:</strong> {selectedCourse.language}
+                          </p>
+                          <p style={styles.detailItem}>
+                            <strong>Start Date:</strong>{" "}
+                            {new Date(selectedCourse.startDate).toDateString()}
+                          </p>
+                          <p style={styles.detailItem}>
+                            <strong>End Date:</strong>{" "}
+                            {new Date(selectedCourse.endDate).toDateString()}
+                          </p>
+                          <p style={styles.detailItem}>
+                            <strong>Price:</strong> ${selectedCourse.price}
+                          </p>
+                          <p style={styles.detailItem}>
+                            <strong>Duration:</strong> {selectedCourse.duration}
+                          </p>
+                          <p style={styles.detailItem}>
+                            <strong>Creator:</strong>{" "}
+                            {selectedCourse.creatorName} (
+                            {selectedCourse.creatorEmail})
+                          </p>
+                        </div>
+                      </div>
+                      {/* Description below the details */}
+                      <div style={styles.sectionDivider} />
+                      <div style={styles.descriptionContainer}>
+                        <p style={{ marginTop: "20px", fontWeight: "bold" }}>
+                          Description:
+                        </p>
+                        <p>{selectedCourse.description}</p>
+                      </div>
+                    </div>
+
+                    {/* Vertical Divider */}
+                    <div style={styles.divider}></div>
+
+                    {/* Second column with course index */}
+                    <div style={styles.column}>
+                      <strong>Course Index:</strong>
+                      <ul>
+                        {selectedCourse.index.map((item, idx) => (
+                          <li key={idx}>{item}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </CustomTabPanel>
+      </Box>
     </>
   );
 };

@@ -18,7 +18,7 @@ import { Slide } from 'react-awesome-reveal';
 const Home = () => {
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
-    document.title = 'NutriMitra | Home';
+    document.title = 'Home | NutriMitra';
   }, [])
   return (
     <>
