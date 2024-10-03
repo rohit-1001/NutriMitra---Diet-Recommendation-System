@@ -49,8 +49,8 @@ function a11yProps(index) {
   };
 }
 
-let username
-let useremail
+let un = localStorage.getItem("name");
+let ue = localStorage.getItem("email");
 
 export default function CreateEventPage(props) {
   const [value, setValue] = useState(0);
@@ -71,13 +71,6 @@ export default function CreateEventPage(props) {
       }
     }
   };
-  useEffect(() => {
-    username = localStorage.getItem("name");
-    useremail = localStorage.getItem("email");
-    setLoaded(false);
-    getAllEvents();
-    setLoaded(true);
-  }, []);
 
   const [event, setEvent] = useState({
     title: "",
@@ -85,13 +78,27 @@ export default function CreateEventPage(props) {
     time: "",
     duration: "",
     mode: "Online",
-    organiser: username,
-    orgemail: useremail,
+    organiser: un,
+    orgemail: ue,
     speaker: "",
     description: "",
     image: "",
     meetId: "",
   });
+
+  const setNameAndEmail = () => {
+    un = localStorage.getItem("name");
+    setEvent({ ...event, organiser: localStorage.getItem("name") });
+    ue = localStorage.getItem("email");
+    setEvent({ ...event, orgemail: localStorage.getItem("email") });
+  };
+
+  useEffect(() => {
+    setNameAndEmail();
+    setLoaded(false);
+    getAllEvents();
+    setLoaded(true);
+  }, []);
 
   const navigate = useNavigate();
   const connectcall = (meetingID) => {
@@ -124,6 +131,8 @@ export default function CreateEventPage(props) {
   };
 
   function generateRandomString(length) {
+    setEvent({ ...event, organiser: localStorage.getItem("name") });
+    setEvent({ ...event, orgemail: localStorage.getItem("email") });
     const charset =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     let result = "";
@@ -173,8 +182,8 @@ export default function CreateEventPage(props) {
         time: "",
         duration: "",
         mode: "Online",
-        organiser: username,
-        orgemail: useremail,
+        organiser: un,
+        orgemail: ue,
         speaker: "",
         description: "",
         image: "",
@@ -250,16 +259,17 @@ export default function CreateEventPage(props) {
               },
             }}
           >
-            <Tab label="My Events" {...a11yProps(0)} />
-            <Tab label="All Events" {...a11yProps(1)} />
+            <Tab label="All Events" {...a11yProps(0)} />
+            <Tab label="My Events" {...a11yProps(1)} />
           </Tabs>
         </Box>
         <CustomTabPanel value={value} index={0}>
           {/* Accordion for My Events */}
           {loaded &&
-            events
-              .filter((eve) => eve.orgemail === useremail)
-              .map((eve) => (
+            (events.length === 0 ? (
+              <Typography variant="h6">No upcoming events found.</Typography>
+            ) : (
+              events.map((eve) => (
                 <Accordion key={eve._id} style={{ width: "100%" }}>
                   <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}
@@ -334,103 +344,107 @@ export default function CreateEventPage(props) {
                         <img
                           src={eve.image}
                           alt={eve.title}
-                          style={{
-                            width: "100%",
-                            height: "auto",
-                          }}
+                          style={{ width: "100%", height: "auto" }}
                         />
                       </Grid>
                     </Grid>
                   </AccordionDetails>
                 </Accordion>
-              ))}
+              ))
+            ))}
         </CustomTabPanel>
         <CustomTabPanel value={value} index={1}>
           {/* Accordion for My Events */}
           {loaded &&
-            events.map((eve) => (
-              <Accordion key={eve._id} style={{ width: "100%" }}>
-                <AccordionSummary
-                  expandIcon={<ExpandMoreIcon />}
-                  style={{
-                    width: "100%",
-                    display: "flex",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <Typography variant="h6" style={{ marginRight: "auto" }}>
-                    {eve.title}
-                  </Typography>
-                  <Button
-                    sx={{
-                      backgroundColor: "#3b8a51",
-                      ":hover": {
-                        backgroundColor: "#34a43c",
-                        transform: "scale(1.02)",
-                        transition: ".2s ease-out",
-                      },
-                    }}
-                    variant="contained"
-                    style={{ marginRight: "5px" }}
-                    onClick={() => connectcall(eve.meetId)}
-                  >
-                    Join
-                  </Button>
-                </AccordionSummary>
-                <AccordionDetails style={{ width: "100%" }}>
-                  <Grid container spacing={2}>
-                    <Grid item xs={12} md={9} container direction="column">
-                      <Grid item container spacing={1}>
-                        <Grid item xs={6}>
-                          <Typography>
-                            <strong>Date:</strong> {formatDate(eve.date)}
-                          </Typography>
+            (events.filter((eve) => eve.orgemail === ue).length === 0 ? (
+              <Typography variant="h6">
+                Looks like you don't have any upcoming event.
+              </Typography>
+            ) : (
+              events
+                .filter((eve) => eve.orgemail === ue)
+                .map((eve) => (
+                  <Accordion key={eve._id} style={{ width: "100%" }}>
+                    <AccordionSummary
+                      expandIcon={<ExpandMoreIcon />}
+                      style={{
+                        width: "100%",
+                        display: "flex",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <Typography variant="h6" style={{ marginRight: "auto" }}>
+                        {eve.title}
+                      </Typography>
+                      <Button
+                        sx={{
+                          backgroundColor: "#3b8a51",
+                          ":hover": {
+                            backgroundColor: "#34a43c",
+                            transform: "scale(1.02)",
+                            transition: ".2s ease-out",
+                          },
+                        }}
+                        variant="contained"
+                        style={{ marginRight: "5px" }}
+                        onClick={() => connectcall(eve.meetId)}
+                      >
+                        Join
+                      </Button>
+                    </AccordionSummary>
+                    <AccordionDetails style={{ width: "100%" }}>
+                      <Grid container spacing={2}>
+                        <Grid item xs={12} md={9} container direction="column">
+                          <Grid item container spacing={1}>
+                            <Grid item xs={6}>
+                              <Typography>
+                                <strong>Date:</strong> {formatDate(eve.date)}
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={6}>
+                              <Typography>
+                                <strong>Time:</strong> {eve.time}
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={6}>
+                              <Typography>
+                                <strong>Estimated Duration:</strong>{" "}
+                                {eve.duration}
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={6}>
+                              <Typography>
+                                <strong>Mode:</strong> {eve.mode}
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={6}>
+                              <Typography>
+                                <strong>Organiser:</strong> {eve.organiser}
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={6}>
+                              <Typography>
+                                <strong>Speaker:</strong> {eve.speaker}
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={12}>
+                              <Typography>
+                                <strong>Description:</strong> {eve.description}
+                              </Typography>
+                            </Grid>
+                          </Grid>
                         </Grid>
-                        <Grid item xs={6}>
-                          <Typography>
-                            <strong>Time:</strong> {eve.time}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                          <Typography>
-                            <strong>Estimated Duration:</strong> {eve.duration}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                          <Typography>
-                            <strong>Mode:</strong> {eve.mode}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                          <Typography>
-                            <strong>Organiser:</strong> {eve.organiser}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                          <Typography>
-                            <strong>Speaker:</strong> {eve.speaker}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={12}>
-                          <Typography>
-                            <strong>Description:</strong> {eve.description}
-                          </Typography>
+                        <Grid item xs={12} md={3}>
+                          <img
+                            src={eve.image}
+                            alt={eve.title}
+                            style={{ width: "100%", height: "auto" }}
+                          />
                         </Grid>
                       </Grid>
-                    </Grid>
-                    <Grid item xs={12} md={3}>
-                      <img
-                        src={eve.image}
-                        alt={eve.title}
-                        style={{
-                          width: "100%",
-                          height: "auto",
-                        }}
-                      />
-                    </Grid>
-                  </Grid>
-                </AccordionDetails>
-              </Accordion>
+                    </AccordionDetails>
+                  </Accordion>
+                ))
             ))}
         </CustomTabPanel>
       </Box>
@@ -621,7 +635,7 @@ export default function CreateEventPage(props) {
                   label="Organiser"
                   fullWidth
                   name="organiser"
-                  value={username}
+                  value={event.organiser}
                   disabled
                   InputProps={{
                     sx: {
