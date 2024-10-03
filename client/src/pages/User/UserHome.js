@@ -1,18 +1,38 @@
-import React from "react";
-import UserForm from "../../components/UserForm";
-const UserHome = () => {
-  return (
-    <>
-      <div style={{textAlign: "center", width:"100%", padding:"2rem 0 0 0", fontWeight: "bolder", fontSize: "1.5rem"}}>Diet Recommendation</div>
-      <div style={{
-        width : "70%",
-        margin: "0 auto",
-        padding: "20px"
+import React, { useState } from 'react';
+import '../../css_files/userhome.css'; // Import the CSS file for styles
+import UserForm from '../../components/UserForm';
+import CustomFoodRecommendation from '../../components/CustomFoodRecommendation';
 
-      }}>
-      <UserForm />
+const UserHome = () => {
+  const [selectedOption, setSelectedOption] = useState('dietRecommendation');
+
+  const handleOptionChange = (option) => {
+    setSelectedOption(option);
+  };
+
+  return (
+    <div className="container" style={{ margin: "2em auto" }}>
+      {/* <h3 className="title">Diet Recommendation</h3> */}
+      <div className="button-group">
+  <button
+    className={`button ${selectedOption === 'dietRecommendation' ? 'active' : 'inactive'}`}
+    onClick={() => handleOptionChange('dietRecommendation')}
+  >
+    Diet Recommendation
+  </button>
+  <button
+    className={`button ${selectedOption === 'customFoodRecommendation' ? 'active' : 'inactive'}`}
+    onClick={() => handleOptionChange('customFoodRecommendation')}
+  >
+    Custom Food Recommendation
+  </button>
+</div>
+
+      <div className="content">
+        {selectedOption === 'dietRecommendation' && <UserForm />}
+        {selectedOption === 'customFoodRecommendation' && <CustomFoodRecommendation />}
       </div>
-    </>
+    </div>
   );
 };
 

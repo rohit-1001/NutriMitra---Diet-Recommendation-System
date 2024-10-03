@@ -24,6 +24,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import "./App.css";
+import CustomFoodRecommendation from "./components/CustomFoodRecommendation";
 function App() {
   const [role, setRole] = useState("visitor");
   const verifyToken = async (token) => {
@@ -86,6 +87,7 @@ function App() {
           <Routes>
             <Route exact path="/" element={<UserHome />} />
             <Route exact path="/home" element={<UserHome />} />
+            {/* <Route exact path="/food" element={<CustomFoodRecommendation />} /> */}
             <Route path="/recipes" element={<Recipes />} />
             <Route path="/blogs" element={<Blogs />} />
             <Route path="/videoconferencing" element={<VideoConference />} />

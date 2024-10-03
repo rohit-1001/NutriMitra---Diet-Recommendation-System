@@ -1,0 +1,44 @@
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  
+  .title {
+    margin-bottom: 24px;
+  }
+  
+  .button-group {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
+  }
+  
+  .button {
+    padding: 10px 20px;
+    border: 2px solid transparent; /* Set transparent border by default */
+    border-radius: 0px;
+    cursor: pointer;
+    background-color: white; /* White background for inactive buttons */
+    transition: background-color 0.3s, transform 0.3s, border 0.3s;
+  }
+  
+  .button.active {
+    background-color: green; /* Green background for the active button */
+    color: white; /* White text for the active button */
+  }
+  
+  .button.inactive {
+    border: 2px solid green; /* Green border for inactive button */
+  }
+  
+  
+  .content {
+    transition: opacity 0.5s ease;
+  }
+  
+  .content > * {
+    opacity: 1;
+    transition: opacity 0.5s ease;
+  }
+  

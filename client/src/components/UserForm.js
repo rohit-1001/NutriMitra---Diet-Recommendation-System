@@ -140,9 +140,13 @@ const UserForm = () => {
 
   const generate_recommendations = async () => {
     const total_calories = weight_loss * caloriesCalculator();
+    console.log("WEIGHT LOSS ON LINE 143:", weight_loss)
+    console.log("CALORIES CALCULATED on line 144:", caloriesCalculator())
+    console.log("TOTAL CALORIES", total_calories)
     const generatedRecommendations = [];
     for (const meal in meals_calories_perc) {
       const meal_calories = meals_calories_perc[meal] * total_calories;
+      console.log("MEAL CALORIES", meal_calories)
       let recommended_nutrition;
       if (meal === "breakfast") {
         recommended_nutrition = [
@@ -223,8 +227,10 @@ const UserForm = () => {
   const handleWeightLossPlanChange = (event) => {
     const selectedIndex = event.target.selectedIndex;
     setWeightLoss(selectedIndex);
+    console.log("WEIGHT LOSS SETTING ON LINE 230:", selectedIndex)
     const selectedValue = event.target.value;
     setWeightLossPlan(selectedValue);
+    console.log("WEIGHT LOSS PLAN SETTING ON LINE 233:", selectedValue)
   };
 
 
