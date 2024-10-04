@@ -12,7 +12,6 @@ const courseSchema = new mongoose.Schema({
   image : {
     type: String,
     default: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROgY9BG36B1t7RZCr_i18RcjgfSJTFyUx0-w&s'
-
   },
   creatorName : {
     type: String,

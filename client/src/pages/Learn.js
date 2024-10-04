@@ -11,6 +11,7 @@ import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import NavigationIcon from "@mui/icons-material/Navigation";
+import AddCourseModal from "../components/AddCourseModal";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -45,12 +46,17 @@ const Learn = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
     window.document.title = "Learn | NutriMitra";
+    const role = localStorage.getItem("role");
+    if(role == "expert") {
+      setMakeCreateCourseButtonVisible(true);
+    }
     getAllCourses();
   }, []);
 
   const [value, setValue] = React.useState(0);
   const [courses, setCourses] = useState([]);
   const [mycourses, setMyCourses] = useState([]);
+  const [makeCreateCourseButtonVisible, setMakeCreateCourseButtonVisible] = useState(false);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -143,6 +149,7 @@ const Learn = () => {
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [addCourseModalVisible, setAddCourseModalVisible] = useState(false);
 
   const handleCardClick = (course) => {
     setSelectedCourse(course);
@@ -151,6 +158,14 @@ const Learn = () => {
 
   const closeModal = () => {
     setShowModal(false);
+  };
+
+  const handleCloseModal = () => {
+    setAddCourseModalVisible(false);
+  };
+
+  const openAddCourseModal = () => {
+    setAddCourseModalVisible(true);
   };
 
   const truncateDescription = (description, wordLimit) => {
@@ -269,7 +284,12 @@ const Learn = () => {
 
   return (
     <>
-      <Box
+      {addCourseModalVisible && (
+        <AddCourseModal
+          onClose={() => setAddCourseModalVisible(false)}
+        />
+      )}
+      {makeCreateCourseButtonVisible && <Box
         sx={{
           position: "fixed",
           bottom: 16,
@@ -288,12 +308,12 @@ const Learn = () => {
           <span
             style={{
               position: "absolute",
-              right: 0, 
+              right: 0,
               bottom: 0,
               height: 56,
               width: isHovered ? "200px" : "56px",
               backgroundColor: "#388E3C",
-              borderRadius: "28px", 
+              borderRadius: "28px",
               color: "#fff",
               display: "flex",
               alignItems: "center",
@@ -311,8 +331,8 @@ const Learn = () => {
           <Fab
             sx={{
               width: 56,
-              height: 56, 
-              backgroundColor: "#81C784", 
+              height: 56,
+              backgroundColor: "#81C784",
               zIndex: 1,
               position: "relative",
               "&:hover": {
@@ -320,6 +340,7 @@ const Learn = () => {
               },
             }}
             aria-label="add"
+            onClick={openAddCourseModal}
           >
             <AddIcon
               sx={{
@@ -329,7 +350,7 @@ const Learn = () => {
             />
           </Fab>
         </div>
-      </Box>
+      </Box>}
       <Box sx={{ width: "100%" }}>
         <Box
           sx={{
