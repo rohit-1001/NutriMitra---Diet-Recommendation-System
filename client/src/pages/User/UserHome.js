@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../../css_files/userhome.css'; // Import the CSS file for styles
 import UserForm from '../../components/UserForm';
 import CustomFoodRecommendation from '../../components/CustomFoodRecommendation';
