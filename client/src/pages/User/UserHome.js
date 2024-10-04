@@ -10,6 +10,10 @@ const UserHome = () => {
     setSelectedOption(option);
   };
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    window.document.title = "Home | NutriMitra";
+  }, []);
   return (
     <div className="container" style={{ margin: "2em auto" }}>
       {/* <h3 className="title">Diet Recommendation</h3> */}

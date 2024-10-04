@@ -94,6 +94,8 @@ export default function CreateEventPage(props) {
   };
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+    window.document.title = "Event | NutriMitra";
     setNameAndEmail();
     setLoaded(false);
     getAllEvents();

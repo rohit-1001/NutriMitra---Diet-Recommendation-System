@@ -18,6 +18,7 @@ import NotFound from "./components/NotFound";
 import Login from "./pages/Visitor/Login";
 import SelectRole from "./components/SelectRole";
 import VideoStartPage from "./pages/VideoStartPage";
+import Learn from "./pages/Learn";
 import CreateEventPage from "./pages/Expert/CreateEventPage";
 import UserEvents from "./pages/User/UserEvents";
 import { ToastContainer } from "react-toastify";
@@ -91,6 +92,7 @@ function App() {
             <Route path="/recipes" element={<Recipes />} />
             <Route path="/blogs" element={<Blogs />} />
             <Route path="/videoconferencing" element={<VideoConference />} />
+            <Route path="/learn" element={<Learn />} />
             <Route path="/startcall" element={<VideoStartPage />} />
             <Route path="/events" element={<UserEvents />} />
             <Route path="*" element={<NotFound />} />
@@ -106,6 +108,7 @@ function App() {
             <Route path="/writeblogs" element={<WriteBlog />} />
             <Route path="/about" element={<About />} />
             <Route path="/videoconferencing" element={<VideoConference />} />
+            <Route path="/learn" element={<Learn />} />
             <Route path="/startcall" element={<VideoStartPage />} />
             <Route path="/events" element={<CreateEventPage />} />
             <Route path="*" element={<NotFound />} />

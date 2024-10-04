@@ -1,9 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Recipe from '../../components/Recipe';
 import "../../css_files/recipes.css";
 import axios from 'axios';
 
 const Recipes = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    window.document.title = "Recipes | NutriMitra";
+  }, []);
+
   const [recipes, setRecipes] = useState([]);
   const [search, setSearch] = useState('');
 

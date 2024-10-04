@@ -42,7 +42,7 @@ import { Slide } from 'react-awesome-reveal';
 export default function HomeAbout() {
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
-    document.title = 'NutriMitra | About';
+    document.title = 'About | NutriMitra';
   }, [])
   return (
     <>
