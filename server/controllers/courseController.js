@@ -88,7 +88,7 @@ const buyCourse = async (req, res) => {
 
 const getMyCourses = async (req, res) => {
   try {
-    const email = req.email;
+    const {email} = req.body;
     const myCourses = await BuyCourse.find({ email: email });
     let myCoursesInfo = [];
     for (let i = 0; i < myCourses.length; i++) {

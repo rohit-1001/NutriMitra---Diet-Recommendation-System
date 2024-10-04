@@ -49,7 +49,7 @@ const Learn = () => {
     window.scrollTo(0, 0);
     window.document.title = "Learn | NutriMitra";
     const role = localStorage.getItem("role");
-    if(role == "expert") {
+    if (role == "expert") {
       setMakeCreateCourseButtonVisible(true);
     }
     getAllCourses();
@@ -58,7 +58,8 @@ const Learn = () => {
   const [value, setValue] = React.useState(0);
   const [courses, setCourses] = useState([]);
   const [mycourses, setMyCourses] = useState([]);
-  const [makeCreateCourseButtonVisible, setMakeCreateCourseButtonVisible] = useState(false);
+  const [makeCreateCourseButtonVisible, setMakeCreateCourseButtonVisible] =
+    useState(false);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -67,17 +68,19 @@ const Learn = () => {
   const getMyCourses = async () => {
     try {
       const token = localStorage.getItem("token");
+      const email = localStorage.getItem("email");
       const res = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/getMyCourses`,
-        { email: localStorage.getItem("email") },
+        { email: email },
         {
           headers: {
             Authorization: "Bearer " + token,
           },
         }
       );
-      const data = res.data;
-      setMyCourses(data.myCourses);
+      if (res.status === 200) {
+        setMyCourses(res.data.myCourses);
+      }
     } catch (error) {
       if (error.response && error.response.data) {
         toast.error(error.response.data.error);
@@ -131,16 +134,15 @@ const Learn = () => {
         );
       }
 
-      let mycourses = [];
       if (role === "expert") {
-        getMyCourses();
+        let mycourses = [];
         mycourses = data.courses.filter(
           (course) => course.creatorEmail === localStorage.getItem("email")
         );
+        setMyCourses(mycourses);
       } else if (role === "user") {
         getMyCourses();
       }
-      setMyCourses(mycourses);
     } catch (error) {
       if (error.response && error.response.data) {
         toast.error(error.response.data.error);
@@ -161,29 +163,61 @@ const Learn = () => {
 
   const handleCardClick1 = async (course) => {
     const token = localStorage.getItem("token");
-    try{
+    try {
       const res = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/getCourseVideos`,
-        { course_id: course._id},
+        { course_id: course._id },
         {
           headers: {
             Authorization: "Bearer " + token,
-          }
+          },
         }
-      )
-      if(res.status === 200) {
+      );
+      if (res.status === 200) {
         setSelectedCourseVideos(res.data.videos);
       }
+    } catch (error) {
+      if (error.response && error.response.data) {
+        toast.error(error.response.data.error);
+      }
     }
-  catch (error) {
-    if (error.response && error.response.data) {
-      toast.error(error.response.data.error);
-    }
-  }
     setSelectedCourse(course);
     setShowModal(true);
   };
-  
+
+  const checkBought = (course) => {
+    for (let i = 0; i < mycourses.length; i++) {
+      if (mycourses[i]._id === course._id) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  const buyCourse = async (course) => {
+    try {
+      const token = localStorage.getItem("token");
+      const email = localStorage.getItem("email");
+      const res = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/buyCourse`,
+        { id: course._id, email: email },
+        {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        }
+      );
+      if (res.status === 200) {
+        toast.success(res.data.msg);
+        getMyCourses();
+      }
+    } catch (error) {
+      if (error.response && error.response.data) {
+        toast.error(error.response.data.error);
+      }
+    }
+  };
+
   const closeModal = () => {
     setShowModal(false);
   };
@@ -258,9 +292,9 @@ const Learn = () => {
       backgroundColor: "white",
       padding: "25px",
       borderRadius: "10px",
-      width: "80%",
-      maxWidth: "1000px",
-      maxHeight: "80vh",
+      width: "90%",
+      maxWidth: "1100px",
+      maxHeight: "82vh",
       overflowY: "auto",
       position: "relative",
     },
@@ -278,7 +312,7 @@ const Learn = () => {
     },
     column: {
       width: "47%",
-      padding: "10px",
+      padding: "7px",
     },
     detailContainer: {
       marginTop: "20px",
@@ -314,74 +348,76 @@ const Learn = () => {
     <>
       {addCourseModalVisible && (
         <AddCourseModal
-        onClose={() => {
-          setAddCourseModalVisible(false);
-          getAllCourses(); // Call your method here
-        }}
-      />
-      )}
-      {makeCreateCourseButtonVisible && <Box
-        sx={{
-          position: "fixed",
-          bottom: 16,
-          right: 16,
-        }}
-      >
-        <div
-          style={{
-            position: "relative",
-            display: "inline-block",
+          onClose={() => {
+            setAddCourseModalVisible(false);
+            getAllCourses(); // Call your method here
           }}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
+        />
+      )}
+      {makeCreateCourseButtonVisible && (
+        <Box
+          sx={{
+            position: "fixed",
+            bottom: 16,
+            right: 16,
+          }}
         >
-          {/* The Slider */}
-          <span
+          <div
             style={{
-              position: "absolute",
-              right: 0,
-              bottom: 0,
-              height: 56,
-              width: isHovered ? "200px" : "56px",
-              backgroundColor: "#388E3C",
-              borderRadius: "28px",
-              color: "#fff",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: isHovered ? "flex-start" : "center",
-              paddingLeft: isHovered ? "20px" : "0",
-              whiteSpace: "nowrap",
-              transition: "width 0.3s ease, padding-left 0.3s ease",
-              overflow: "hidden",
-            }}
-          >
-            {isHovered ? "Create Course" : ""}
-          </span>
-
-          {/* The Floating Button */}
-          <Fab
-            sx={{
-              width: 56,
-              height: 56,
-              backgroundColor: "#81C784",
-              zIndex: 1,
               position: "relative",
-              "&:hover": {
-                backgroundColor: "#388E3C",
-              },
+              display: "inline-block",
             }}
-            aria-label="add"
-            onClick={openAddCourseModal}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
           >
-            <AddIcon
-              sx={{
-                color: isHovered ? "#fff" : "#000",
-                transition: "color 0.3s ease",
+            {/* The Slider */}
+            <span
+              style={{
+                position: "absolute",
+                right: 0,
+                bottom: 0,
+                height: 56,
+                width: isHovered ? "200px" : "56px",
+                backgroundColor: "#388E3C",
+                borderRadius: "28px",
+                color: "#fff",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: isHovered ? "flex-start" : "center",
+                paddingLeft: isHovered ? "20px" : "0",
+                whiteSpace: "nowrap",
+                transition: "width 0.3s ease, padding-left 0.3s ease",
+                overflow: "hidden",
               }}
-            />
-          </Fab>
-        </div>
-      </Box>}
+            >
+              {isHovered ? "Create Course" : ""}
+            </span>
+
+            {/* The Floating Button */}
+            <Fab
+              sx={{
+                width: 56,
+                height: 56,
+                backgroundColor: "#81C784",
+                zIndex: 1,
+                position: "relative",
+                "&:hover": {
+                  backgroundColor: "#388E3C",
+                },
+              }}
+              aria-label="add"
+              onClick={openAddCourseModal}
+            >
+              <AddIcon
+                sx={{
+                  color: isHovered ? "#fff" : "#000",
+                  transition: "color 0.3s ease",
+                }}
+              />
+            </Fab>
+          </div>
+        </Box>
+      )}
       <Box sx={{ width: "100%" }}>
         <Box
           sx={{
@@ -441,7 +477,8 @@ const Learn = () => {
                     {truncateDescription(course.description, 20)}
                   </p>
                   <p style={styles.price}>
-                    <strong>Price:</strong> ${course.price}
+                    <strong>Price:</strong> {`\u20B9`}
+                    {course.price}
                   </p>
                 </div>
               ))}
@@ -451,7 +488,7 @@ const Learn = () => {
             {showModal && selectedCourse && (
               <div style={styles.modal} onClick={closeModal}>
                 <div
-                  style={styles.modalContent}
+                  style={{ ...styles.modalContent, position: "relative" }}
                   onClick={(e) => e.stopPropagation()}
                 >
                   <span style={styles.closeButton} onClick={closeModal}>
@@ -479,7 +516,8 @@ const Learn = () => {
                             <strong>Language:</strong> {selectedCourse.language}
                           </p>
                           <p style={styles.detailItem}>
-                            <strong>Price:</strong> ${selectedCourse.price}
+                            <strong>Price:</strong> {`\u20B9`}
+                            {selectedCourse.price}
                           </p>
                           <p style={styles.detailItem}>
                             <strong>Creator:</strong>{" "}
@@ -497,11 +535,13 @@ const Learn = () => {
                         <p
                           style={{
                             whiteSpace: "pre-wrap",
-                            maxHeight: "200px",
+                            maxHeight: "180px",
                             overflowY: "auto",
-                            paddingRight: "10px"
+                            paddingRight: "10px",
                           }}
-                        >{selectedCourse.description}</p>
+                        >
+                          {selectedCourse.description}
+                        </p>
                       </div>
                     </div>
 
@@ -518,6 +558,42 @@ const Learn = () => {
                       </ul>
                     </div>
                   </div>
+
+                  {/* Centered Submit Button */}
+                  {!makeCreateCourseButtonVisible && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        bottom: "20px",
+                        left: "50%",
+                        transform: "translateX(-50%)",
+                        width: "fit-content",
+                      }}
+                    >
+                      <button
+                        onClick={() => {
+                          if (!checkBought(selectedCourse)) {
+                            buyCourse(selectedCourse);
+                          }
+                        }}
+                        disabled={checkBought(selectedCourse)} // Disable button if course is bought
+                        style={{
+                          padding: "10px 15px",
+                          backgroundColor: checkBought(selectedCourse)
+                            ? "gray"
+                            : "#4CAF50", // Set color conditionally
+                          color: "white",
+                          border: "none",
+                          borderRadius: "4px",
+                          cursor: checkBought(selectedCourse)
+                            ? "not-allowed"
+                            : "pointer", // Update cursor style
+                        }}
+                      >
+                        {checkBought(selectedCourse) ? "Bought" : "Buy"}
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -553,7 +629,8 @@ const Learn = () => {
                         {truncateDescription(course.description, 20)}
                       </p>
                       <p style={styles.price}>
-                        <strong>Price:</strong> ${course.price}
+                        <strong>Price:</strong> {`\u20B9`}
+                        {course.price}
                       </p>
                     </div>
                   ))}
@@ -591,7 +668,8 @@ const Learn = () => {
                             <strong>Language:</strong> {selectedCourse.language}
                           </p>
                           <p style={styles.detailItem}>
-                            <strong>Price:</strong> ${selectedCourse.price}
+                            <strong>Price:</strong> {`\u20B9`}
+                            {selectedCourse.price}
                           </p>
                           <p style={styles.detailItem}>
                             <strong>Creator:</strong>{" "}
@@ -607,13 +685,15 @@ const Learn = () => {
                           Description:
                         </p>
                         <p
-                          style = {{
+                          style={{
                             whiteSpace: "pre-wrap",
                             maxHeight: "200px",
                             overflowY: "auto",
-                            paddingRight: "10px"
+                            paddingRight: "10px",
                           }}
-                        >{selectedCourse.description}</p>
+                        >
+                          {selectedCourse.description}
+                        </p>
                       </div>
                     </div>
 
@@ -621,50 +701,60 @@ const Learn = () => {
                     <div style={styles.divider}></div>
 
                     {/* Second column with course index */}
-                    <div style={styles.column}>
+                    <div
+                      style={{
+                        ...styles.column,
+                        maxHeight: "300px",
+                        overflowY: "auto",
+                      }}
+                    >
                       <strong>Course Index:</strong>
-                      <ul>
-                      {selectedCourse.index.map((field, index) => (
-                          <li key={index}>
-                          {field}
-                          {selectedCourseVideos[index] && (
-                            <NavLink
-                              to=""
-                              onClick={(e) => {
-                                e.preventDefault(); // Prevent default NavLink behavior
-            
-                                // Create a new tab
-                                const newTab = window.open();
-                                // Set the title of the new tab to the value of the text field at that index
-                                newTab.document.title =
-                                selectedCourse.index[index] || "Video Player";
-            
-                                // Write the video player HTML into the new tab
-                                newTab.document.write(`
-                                    <html>
-                                    <head>
-                                        <title>${selectedCourse.index[index]}</title>
-                                    </head>
-                                    <body style="margin:0;">
-                                        <video controls autoplay style="width:100%; height:100%;">
-                                        <source src="${selectedCourseVideos[index].video}" type="video/mp4" />
-                                        Your browser does not support the video tag.
-                                        </video>
-                                    </body>
-                                    </html>
-                                `);
-                              }}
-                              style={{
-                                marginLeft: "10px",
-                                color: "blue",
-                                textDecoration: "none", // Remove underline for the icon
-                                cursor: "pointer",
-                              }}
-                            >
-                              <ArrowOutwardIcon style={{ color: "green" }} />
-                            </NavLink>
-                          )}
-                        </li>
+                      <ul style={{ paddingLeft: "20px" }}>
+                        {" "}
+                        {/* Add padding for better spacing */}
+                        {selectedCourse.index.map((field, index) => (
+                          <li key={index} style={{ marginBottom: "10px" }}>
+                            {" "}
+                            {/* Optional: Add margin for spacing */}
+                            {field}
+                            {selectedCourseVideos[index] && (
+                              <NavLink
+                                to=""
+                                onClick={(e) => {
+                                  e.preventDefault();
+
+                                  // Create a new tab
+                                  const newTab = window.open();
+                                  newTab.document.title =
+                                    selectedCourse.index[index] ||
+                                    "Video Player";
+
+                                  // Write the video player HTML into the new tab
+                                  newTab.document.write(`
+                <html>
+                <head>
+                    <title>${selectedCourse.index[index]}</title>
+                </head>
+                <body style="margin:0;">
+                    <video controls autoplay style="width:100%; height:100%;">
+                    <source src="${selectedCourseVideos[index].video}" type="video/mp4" />
+                    Your browser does not support the video tag.
+                    </video>
+                </body>
+                </html>
+              `);
+                                }}
+                                style={{
+                                  marginLeft: "10px",
+                                  color: "blue",
+                                  textDecoration: "none",
+                                  cursor: "pointer",
+                                }}
+                              >
+                                <ArrowOutwardIcon style={{ color: "green" }} />
+                              </NavLink>
+                            )}
+                          </li>
                         ))}
                       </ul>
                     </div>
