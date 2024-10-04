@@ -9,27 +9,18 @@ const upload = multer({ storage: storage });
 
 const createCourse = async (req, res) => {
   try {
-    let { formData, videos } = req.body;
+    let { formData, videos, creator } = req.body;
 
-    let {
-      title,
-      description,
-      image,
-      creatorName,
-      creatorEmail,
-      authors,
-      language,
-      textFields,
-      price,
-    } = formData;
+    let { title, description, image, authors, language, textFields, price } =
+      formData;
 
     let courseData = {};
     if (image === "") {
       courseData = {
         title,
         description,
-        creatorName,
-        creatorEmail,
+        creatorName: creator.name,
+        creatorEmail: creator.email,
         authors,
         language,
         index: textFields,
@@ -40,22 +31,27 @@ const createCourse = async (req, res) => {
         title,
         description,
         image,
-        creatorName,
-        creatorEmail,
+        creatorName: creator.name,
+        creatorEmail: creator.email,
         authors,
         language,
-        index : textFields,
+        index: textFields,
         price,
       };
     }
+
+    const hasNullVideo = videos.some((video) => video === null);
+
+    if (hasNullVideo) {
+      return res.status(400).json({
+        error: "Some videos are missing. Please upload all course videos.",
+      });
+    }
+
     const course = new Course(courseData);
     await course.save();
 
     const id = course._id;
-    if (courseData.index.length !== videos.length) {
-      return res.status(400).json({ error: "Kindly upload videos for complete course" });
-    }
-
     // Save each video with its index
     for (let i = 0; i < videos.length; i++) {
       const videoString = videos[i]; // Access the video buffer from multer
@@ -66,7 +62,6 @@ const createCourse = async (req, res) => {
 
     res.status(200).json({ msg: "Course created successfully" });
   } catch (error) {
-    console.log(error);
     res.status(500).json({ error: "Some unexpected error occurred" });
   }
 };
@@ -105,4 +100,23 @@ const getMyCourses = async (req, res) => {
   }
 };
 
-module.exports = { createCourse, getCourse, buyCourse, getMyCourses };
+const getCourseVideos = async (req, res) => {
+    try {
+      const { course_id } = req.body;
+      const videos = await Video.find({ id : course_id}) 
+        .sort({ ind: 1 })
+        .select('video');
+      res.status(200).json({ videos: videos });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch videos" });
+    }
+  };
+  
+
+module.exports = {
+  createCourse,
+  getCourse,
+  buyCourse,
+  getMyCourses,
+  getCourseVideos,
+};

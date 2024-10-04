@@ -12,6 +12,8 @@ import EditIcon from "@mui/icons-material/Edit";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import NavigationIcon from "@mui/icons-material/Navigation";
 import AddCourseModal from "../components/AddCourseModal";
+import { NavLink } from "react-router-dom";
+import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -150,12 +152,38 @@ const Learn = () => {
   const [showModal, setShowModal] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [addCourseModalVisible, setAddCourseModalVisible] = useState(false);
+  const [selectedCourseVideos, setSelectedCourseVideos] = useState([]);
 
-  const handleCardClick = (course) => {
+  const handleCardClick = async (course) => {
     setSelectedCourse(course);
     setShowModal(true);
   };
 
+  const handleCardClick1 = async (course) => {
+    const token = localStorage.getItem("token");
+    try{
+      const res = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/getCourseVideos`,
+        { course_id: course._id},
+        {
+          headers: {
+            Authorization: "Bearer " + token,
+          }
+        }
+      )
+      if(res.status === 200) {
+        setSelectedCourseVideos(res.data.videos);
+      }
+    }
+  catch (error) {
+    if (error.response && error.response.data) {
+      toast.error(error.response.data.error);
+    }
+  }
+    setSelectedCourse(course);
+    setShowModal(true);
+  };
+  
   const closeModal = () => {
     setShowModal(false);
   };
@@ -286,8 +314,11 @@ const Learn = () => {
     <>
       {addCourseModalVisible && (
         <AddCourseModal
-          onClose={() => setAddCourseModalVisible(false)}
-        />
+        onClose={() => {
+          setAddCourseModalVisible(false);
+          getAllCourses(); // Call your method here
+        }}
+      />
       )}
       {makeCreateCourseButtonVisible && <Box
         sx={{
@@ -463,7 +494,14 @@ const Learn = () => {
                         <p style={{ marginTop: "20px", fontWeight: "bold" }}>
                           Description:
                         </p>
-                        <p>{selectedCourse.description}</p>
+                        <p
+                          style={{
+                            whiteSpace: "pre-wrap",
+                            maxHeight: "200px",
+                            overflowY: "auto",
+                            paddingRight: "10px"
+                          }}
+                        >{selectedCourse.description}</p>
                       </div>
                     </div>
 
@@ -495,7 +533,7 @@ const Learn = () => {
                     <div
                       key={index}
                       style={styles.card}
-                      onClick={() => handleCardClick(course)}
+                      onClick={() => handleCardClick1(course)}
                       onMouseEnter={(e) =>
                         (e.currentTarget.style.boxShadow =
                           "0 8px 16px rgba(0, 0, 0, 0.2)")
@@ -522,7 +560,7 @@ const Learn = () => {
             </div>
 
             {/* Modal for detailed course info */}
-            {showModal && selectedCourse && (
+            {showModal && selectedCourse && selectedCourseVideos && (
               <div style={styles.modal} onClick={closeModal}>
                 <div
                   style={styles.modalContent}
@@ -568,7 +606,14 @@ const Learn = () => {
                         <p style={{ marginTop: "20px", fontWeight: "bold" }}>
                           Description:
                         </p>
-                        <p>{selectedCourse.description}</p>
+                        <p
+                          style = {{
+                            whiteSpace: "pre-wrap",
+                            maxHeight: "200px",
+                            overflowY: "auto",
+                            paddingRight: "10px"
+                          }}
+                        >{selectedCourse.description}</p>
                       </div>
                     </div>
 
@@ -579,8 +624,47 @@ const Learn = () => {
                     <div style={styles.column}>
                       <strong>Course Index:</strong>
                       <ul>
-                        {selectedCourse.index.map((item, idx) => (
-                          <li key={idx}>{item}</li>
+                      {selectedCourse.index.map((field, index) => (
+                          <li key={index}>
+                          {field}
+                          {selectedCourseVideos[index] && (
+                            <NavLink
+                              to=""
+                              onClick={(e) => {
+                                e.preventDefault(); // Prevent default NavLink behavior
+            
+                                // Create a new tab
+                                const newTab = window.open();
+                                // Set the title of the new tab to the value of the text field at that index
+                                newTab.document.title =
+                                selectedCourse.index[index] || "Video Player";
+            
+                                // Write the video player HTML into the new tab
+                                newTab.document.write(`
+                                    <html>
+                                    <head>
+                                        <title>${selectedCourse.index[index]}</title>
+                                    </head>
+                                    <body style="margin:0;">
+                                        <video controls autoplay style="width:100%; height:100%;">
+                                        <source src="${selectedCourseVideos[index].video}" type="video/mp4" />
+                                        Your browser does not support the video tag.
+                                        </video>
+                                    </body>
+                                    </html>
+                                `);
+                              }}
+                              style={{
+                                marginLeft: "10px",
+                                color: "blue",
+                                textDecoration: "none", // Remove underline for the icon
+                                cursor: "pointer",
+                              }}
+                            >
+                              <ArrowOutwardIcon style={{ color: "green" }} />
+                            </NavLink>
+                          )}
+                        </li>
                         ))}
                       </ul>
                     </div>

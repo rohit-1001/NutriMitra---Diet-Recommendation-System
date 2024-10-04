@@ -10,7 +10,7 @@ const videoSchema = new mongoose.Schema({
         required: true
     },
     video: {
-        type: Buffer,
+        type: String,
         required: true
     }
 });

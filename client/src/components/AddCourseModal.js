@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import SubdirectoryArrowLeftIcon from "@mui/icons-material/SubdirectoryArrowLeft";
 import ClearIcon from "@mui/icons-material/Clear";
 import Box from "@mui/material/Box";
@@ -17,10 +17,23 @@ const steps = ["Course Details", "Upload Content", "Preview"];
 const CourseModal = ({ onClose }) => {
   const [activeStep, setActiveStep] = useState(0);
   const [skipped, setSkipped] = useState(new Set());
+  const [creator, setCreator] = useState({
+    name: "",
+    email: "",
+  });
+
+  useEffect(() => {
+    const name = localStorage.getItem("name");
+    const email = localStorage.getItem("email");
+    setCreator((prev) => ({
+      ...prev,
+      name: name,
+      email: email,
+    }));
+  }, []);
+
   const [formData, setFormData] = useState({
     image: "",
-    creatorName: "",
-    creatorEmail: "",
     textFields: [""],
     title: "",
     authors: "",
@@ -33,23 +46,11 @@ const CourseModal = ({ onClose }) => {
   );
 
   const handleSubmitForm = async () => {
-    const name = localStorage.getItem("name");
-    const email = localStorage.getItem("email");
-    setFormData((prev) => ({
-      ...prev,
-      creatorName: name,
-    }));
-    setFormData((prev) => ({
-      ...prev,
-      creatorEmail: email,
-    }));
-
-
     try {
       const token = localStorage.getItem("token");
       const res = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/createCourse`,
-        { formData: formData, videos: videos },
+        { formData: formData, videos: videos, creator: creator },
         {
           headers: {
             Authorization: "Bearer " + token,
@@ -57,8 +58,10 @@ const CourseModal = ({ onClose }) => {
         }
       );
       if (res.status === 200) {
-        toast.success("Course submitted successfully!");
+        toast.success("Course created successfully!");
         onClose();
+      } else if (res.status === 400) {
+        toast.error(res.data.error);
       }
     } catch (err) {
       if (err.response && err.response.data) {
@@ -77,6 +80,7 @@ const CourseModal = ({ onClose }) => {
         setVideos((prev) => {
           const updatedVideos = [...prev];
           updatedVideos[index] = reader.result;
+          console.log(typeof updatedVideos[index]);
           return updatedVideos;
         });
       };
@@ -433,15 +437,19 @@ const CourseModal = ({ onClose }) => {
         </div>
       </div>
     </div>,
-    <div>
+    <div
+      style={{
+        height: "400px",
+        overflowY: "auto",
+        padding: "10px",
+        border: "1px solid #ddd",
+      }}
+    >
       <h3>Upload Content</h3>
       {formData.textFields.length > 0 ? (
         formData.textFields.map((field, index) => (
           <div key={index} style={{ marginBottom: "10px" }}>
             <div style={{ display: "flex", alignItems: "center" }}>
-              <label
-                style={{ marginRight: "10px" }}
-              >{`Upload content for `}</label>
               <span style={{ marginRight: "10px" }}>{field}</span>
               {/* Check if field is not empty */}
               {field.length > 0 ? (
@@ -633,25 +641,20 @@ const CourseModal = ({ onClose }) => {
                     newTab.document.title =
                       formData.textFields[index] || "Video Player";
 
-                    // Create a URL for the video data
-                    const videoURL = `data:video/mp4;base64,${
-                      videos[index].split(",")[1]
-                    }`;
-
                     // Write the video player HTML into the new tab
                     newTab.document.write(`
-        <html>
-          <head>
-            <title>${formData.textFields[index]}</title>
-          </head>
-          <body style="margin:0;">
-            <video controls autoplay style="width:100%; height:100%;">
-              <source src="${videoURL}" type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
-          </body>
-        </html>
-      `);
+                        <html>
+                        <head>
+                            <title>${formData.textFields[index]}</title>
+                        </head>
+                        <body style="margin:0;">
+                            <video controls autoplay style="width:100%; height:100%;">
+                            <source src="${videos[index]}" type="video/mp4" />
+                            Your browser does not support the video tag.
+                            </video>
+                        </body>
+                        </html>
+                    `);
                   }}
                   style={{
                     marginLeft: "10px",
@@ -694,6 +697,13 @@ const CourseModal = ({ onClose }) => {
               backgroundColor: "transparent",
               "& .MuiStepLabel-label": { color: "#4CAF50" },
               "& .MuiStepConnector-line": { backgroundColor: "#4CAF50" },
+              "& .Mui-active .MuiStepLabel-label": {
+                color: "#4CAF50", // Color for active step label
+              },
+              "& .Mui-active .MuiStepIcon-root": {
+                color: "white", // Change the background color of the active step icon to white
+                border: "2px solid #4CAF50", // Optional: Add a border to the active step icon
+              },
             }}
           >
             {steps.map((label, index) => {
@@ -728,12 +738,17 @@ const CourseModal = ({ onClose }) => {
           </Stepper>
           {activeStep === steps.length ? (
             <React.Fragment>
-              <Typography sx={{ mt: 2, mb: 1 }}>
-                All steps completed - you're finished
-              </Typography>
+              <Typography sx={{ mt: 2, mb: 1 }}>Creating Course...</Typography>
               <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
                 <Box sx={{ flex: "1 1 auto" }} />
-                <Button onClick={handleReset}>Reset</Button>
+                <Button
+                  onClick={handleReset}
+                  style={{
+                    color: "green",
+                  }}
+                >
+                  EDIT
+                </Button>
               </Box>
             </React.Fragment>
           ) : (
