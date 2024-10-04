@@ -5,41 +5,28 @@ import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import { PieChart } from "@mui/x-charts/PieChart";
 
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-  p: 4,
-};
-
 const DisplayRecommendations = (props) => {
-  const { recommendations, mealsPerDay, requiredCalories, meals, nutrition } =
-    props.details;
-    let data = [];
-    nutrition.map((item) => {
-        data.push({
-            id: item.id,
-            value: item.value,
-            label: item.label,
-        });
-    });
-  const [currRecipe, setCurrRecipe] = useState({});
+  const { recommendations, mealsPerDay, requiredCalories, meals, nutrition } = props.details;
+  let data = nutrition.map((item) => ({
+    id: item.id,
+    value: item.value,
+    label: item.label,
+  }));
 
+  const [currRecipe, setCurrRecipe] = useState({});
   const [open, setOpen] = React.useState(false);
+
   const handleOpen = (recipe) => {
     setCurrRecipe(recipe);
     console.log(recipe);
     setOpen(true);
   };
+
   const handleClose = () => {
     setOpen(false);
     setCurrRecipe({});
   };
+
   return (
     <>
       <div
@@ -64,7 +51,6 @@ const DisplayRecommendations = (props) => {
         Recommended recipes:
       </div>
       <div style={{ display: "flex" }}>
-        {/* Map over each array of recipes */}
         {recommendations.map((recipeArray, index) => (
           <div
             key={index}
@@ -86,7 +72,6 @@ const DisplayRecommendations = (props) => {
                 padding: "10px",
               }}
             >
-              {/* Map over each recipe in the array */}
               {recipeArray.map((recipe, recipeIndex) => (
                 <div
                   key={recipeIndex}
@@ -115,10 +100,12 @@ const DisplayRecommendations = (props) => {
             transform: "translate(-50%, -50%)",
             width: 1000,
             maxWidth: "90%",
+            maxHeight: "90vh",
             bgcolor: "background.paper",
             border: "2px solid #000",
             boxShadow: 24,
             p: 4,
+            overflowY: "auto",
           }}
         >
           <Typography
@@ -142,188 +129,34 @@ const DisplayRecommendations = (props) => {
             >
               <tbody>
                 <tr>
-                  <td
-                    style={{
-                      flex: "1",
-                      border: "1px solid black",
-                      padding: "5px",
-                      backgroundColor: "lightgrey",
-                      height: "30px",
-                    }}
-                  >
-                    <strong>Calories</strong>
-                  </td>
-                  <td
-                    style={{
-                      flex: "1",
-                      border: "1px solid black",
-                      padding: "5px",
-                      backgroundColor: "lightgrey",
-                      height: "30px",
-                    }}
-                  >
-                    <strong>Carbohydrate</strong>
-                  </td>
-                  <td
-                    style={{
-                      flex: "1",
-                      border: "1px solid black",
-                      padding: "5px",
-                      backgroundColor: "lightgrey",
-                      height: "30px",
-                    }}
-                  >
-                    <strong>Protein</strong>
-                  </td>
-                  <td
-                    style={{
-                      flex: "1",
-                      border: "1px solid black",
-                      padding: "5px",
-                      backgroundColor: "lightgrey",
-                      height: "30px",
-                    }}
-                  >
-                    <strong>Cholesterol</strong>
-                  </td>
-                  <td
-                    style={{
-                      flex: "1",
-                      border: "1px solid black",
-                      padding: "5px",
-                      backgroundColor: "lightgrey",
-                      height: "30px",
-                    }}
-                  >
-                    <strong>Fat</strong>
-                  </td>
-                  <td
-                    style={{
-                      flex: "1",
-                      border: "1px solid black",
-                      padding: "5px",
-                      backgroundColor: "lightgrey",
-                      height: "30px",
-                    }}
-                  >
-                    <strong>Fiber</strong>
-                  </td>
-                  <td
-                    style={{
-                      flex: "1",
-                      border: "1px solid black",
-                      padding: "5px",
-                      backgroundColor: "lightgrey",
-                      height: "30px",
-                    }}
-                  >
-                    <strong>Saturated Fat</strong>
-                  </td>
-                  <td
-                    style={{
-                      flex: "1",
-                      border: "1px solid black",
-                      padding: "5px",
-                      backgroundColor: "lightgrey",
-                      height: "30px",
-                    }}
-                  >
-                    <strong>Sodium</strong>
-                  </td>
-                  <td
-                    style={{
-                      flex: "1",
-                      border: "1px solid black",
-                      padding: "5px",
-                      backgroundColor: "lightgrey",
-                      height: "30px",
-                    }}
-                  >
-                    <strong>Sugar Content</strong>
-                  </td>
+                  {["Calories", "Carbohydrate", "Protein", "Cholesterol", "Fat", "Fiber", "Saturated Fat", "Sodium", "Sugar Content"].map((header) => (
+                    <td
+                      key={header}
+                      style={{
+                        flex: "1",
+                        border: "1px solid black",
+                        padding: "5px",
+                        backgroundColor: "lightgrey",
+                        height: "30px",
+                      }}
+                    >
+                      <strong>{header}</strong>
+                    </td>
+                  ))}
                 </tr>
                 <tr>
-                  <td
-                    style={{
-                      flex: "1",
-                      border: "1px solid black",
-                      padding: "5px",
-                    }}
-                  >
-                    {currRecipe.Calories || "-"}
-                  </td>
-                  <td
-                    style={{
-                      flex: "1",
-                      border: "1px solid black",
-                      padding: "5px",
-                    }}
-                  >
-                    {currRecipe.CarbohydrateContent || "-"}
-                  </td>
-                  <td
-                    style={{
-                      flex: "1",
-                      border: "1px solid black",
-                      padding: "5px",
-                    }}
-                  >
-                    {currRecipe.ProteinContent || "-"}
-                  </td>
-                  <td
-                    style={{
-                      flex: "1",
-                      border: "1px solid black",
-                      padding: "5px",
-                    }}
-                  >
-                    {currRecipe.CholesterolContent || "-"}
-                  </td>
-                  <td
-                    style={{
-                      flex: "1",
-                      border: "1px solid black",
-                      padding: "5px",
-                    }}
-                  >
-                    {currRecipe.FatContent || "-"}
-                  </td>
-                  <td
-                    style={{
-                      flex: "1",
-                      border: "1px solid black",
-                      padding: "5px",
-                    }}
-                  >
-                    {currRecipe.FiberContent || "-"}
-                  </td>
-                  <td
-                    style={{
-                      flex: "1",
-                      border: "1px solid black",
-                      padding: "5px",
-                    }}
-                  >
-                    {currRecipe.SaturatedFatContent || "-"}
-                  </td>
-                  <td
-                    style={{
-                      flex: "1",
-                      border: "1px solid black",
-                      padding: "5px",
-                    }}
-                  >
-                    {currRecipe.SodiumContent || "-"}
-                  </td>
-                  <td
-                    style={{
-                      flex: "1",
-                      border: "1px solid black",
-                      padding: "5px",
-                    }}
-                  >
-                    {currRecipe.SugarContent || "-"}
-                  </td>
+                  {["Calories", "CarbohydrateContent", "ProteinContent", "CholesterolContent", "FatContent", "FiberContent", "SaturatedFatContent", "SodiumContent", "SugarContent"].map((content) => (
+                    <td
+                      key={content}
+                      style={{
+                        flex: "1",
+                        border: "1px solid black",
+                        padding: "5px",
+                      }}
+                    >
+                      {currRecipe[content] || "-"}
+                    </td>
+                  ))}
                 </tr>
               </tbody>
             </table>
@@ -335,84 +168,32 @@ const DisplayRecommendations = (props) => {
               }}
             >
               <tbody>
-                <tr>
-                  <td
-                    style={{
-                      border: "1px solid black",
-                      padding: "5px",
-                      backgroundColor: "lightgrey",
-                    }}
-                  >
-                    <strong>Prep Time:</strong>
-                  </td>
-                  <td
-                    style={{
-                      border: "1px solid black",
-                      padding: "5px",
-                    }}
-                  >
-                    {currRecipe.PrepTime} minutes
-                  </td>
-                </tr>
-                <tr>
-                  <td
-                    style={{
-                      border: "1px solid black",
-                      padding: "5px",
-                      backgroundColor: "lightgrey",
-                    }}
-                  >
-                    <strong>Cook Time:</strong>
-                  </td>
-                  <td
-                    style={{
-                      border: "1px solid black",
-                      padding: "5px",
-                    }}
-                  >
-                    {currRecipe.CookTime} minutes
-                  </td>
-                </tr>
-                <tr>
-                  <td
-                    style={{
-                      border: "1px solid black",
-                      padding: "5px",
-                      backgroundColor: "lightgrey",
-                    }}
-                  >
-                    <strong>Total Time:</strong>
-                  </td>
-                  <td
-                    style={{
-                      border: "1px solid black",
-                      padding: "5px",
-                    }}
-                  >
-                    {currRecipe.TotalTime} minutes
-                  </td>
-                </tr>
-                <tr>
-                  <td
-                    style={{
-                      border: "1px solid black",
-                      padding: "5px",
-                      backgroundColor: "lightgrey",
-                    }}
-                  >
-                    <strong>Ingredients:</strong>
-                  </td>
-                  <td
-                    style={{
-                      border: "1px solid black",
-                      padding: "5px",
-                    }}
-                  >
-                    {currRecipe.RecipeIngredientParts &&
-                      currRecipe.RecipeIngredientParts.length > 0 &&
-                      currRecipe.RecipeIngredientParts.join(", ")}
-                  </td>
-                </tr>
+                {[
+                  { label: "Prep Time", value: `${currRecipe.PrepTime} minutes` },
+                  { label: "Cook Time", value: `${currRecipe.CookTime} minutes` },
+                  { label: "Total Time", value: `${currRecipe.TotalTime} minutes` },
+                  { label: "Ingredients", value: currRecipe.RecipeIngredientParts && currRecipe.RecipeIngredientParts.join(", ") },
+                ].map(({ label, value }) => (
+                  <tr key={label}>
+                    <td
+                      style={{
+                        border: "1px solid black",
+                        padding: "5px",
+                        backgroundColor: "lightgrey",
+                      }}
+                    >
+                      <strong>{label}:</strong>
+                    </td>
+                    <td
+                      style={{
+                        border: "1px solid black",
+                        padding: "5px",
+                      }}
+                    >
+                      {value}
+                    </td>
+                  </tr>
+                ))}
                 <tr>
                   <td
                     style={{
@@ -430,37 +211,18 @@ const DisplayRecommendations = (props) => {
                     }}
                   >
                     {currRecipe.RecipeInstructions &&
-                      currRecipe.RecipeInstructions.length > 0 &&
-                      currRecipe.RecipeInstructions.map(
-                        (instruction, index) => (
-                          <div key={index}>
-                            <strong>{index + 1}.</strong> {instruction}
-                          </div>
-                        )
-                      )}
+                      currRecipe.RecipeInstructions.map((instruction, index) => (
+                        <div key={index}>
+                          <strong>{index + 1}.</strong> {instruction}
+                        </div>
+                      ))}
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
-          <div>
-
-          </div>
         </Box>
       </Modal>
-      {/* <PieChart
-        series={[
-          {
-            data: [
-              { id: 0, value: 10, label: "series A" },
-              { id: 1, value: 15, label: "series B" },
-              { id: 2, value: 20, label: "series C" },
-            ],
-          },
-        ]}
-        width={400}
-        height={200}
-      /> */}
     </>
   );
 };
