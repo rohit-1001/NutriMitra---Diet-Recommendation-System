@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-import Box from "@mui/material/Box";
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
 import { toast } from "react-toastify";
 import axios from "axios";
 import DynamicEmoji from "../components/DynamicEmoji";
@@ -200,7 +201,7 @@ const Learn = () => {
       const email = localStorage.getItem("email");
       const res = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/buyCourse`,
-        { id: course._id, email: email },
+        { id: course._id, email: email, money: course.price },
         {
           headers: {
             Authorization: "Bearer " + token,

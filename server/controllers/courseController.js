@@ -2,6 +2,7 @@ const Course = require("../models/Course");
 const BuyCourse = require("../models/BuyCourse");
 const Video = require("../models/Videos");
 const multer = require("multer");
+const CourseMoney = require("../models/CourseMoney");
 
 // Define storage settings for multer
 const storage = multer.memoryStorage(); // Store files as Buffer in memory
@@ -77,9 +78,20 @@ const getCourse = async (req, res) => {
 
 const buyCourse = async (req, res) => {
   try {
-    const { id, email } = req.body;
+    const { id, email, money } = req.body;
     const buyCourse = new BuyCourse({ id, email });
     await buyCourse.save();
+
+    const addMoney = await CourseMoney.findOne({ email: email });
+    if(addMoney){
+      await CourseMoney.findOneAndUpdate(
+        { email: email },
+        { $inc: { money: money } }
+      );
+    } else {
+      const courseMoney = new CourseMoney({ email: email, money: money });
+      await courseMoney.save();
+    }
     res.status(200).json({ msg: "Course bought successfully" });
   } catch (error) {
     res.status(500).json({ error: "Failed to buy course" });
