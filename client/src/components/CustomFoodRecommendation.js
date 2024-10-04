@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { Slider, Box, Typography, Button, Grid, CircularProgress } from '@mui/material';
 import { styled } from '@mui/system';
-import DisplayRecommendations from './DisplayRecommendations'; // Import your DisplayRecommendations component
+import DisplayRecommendations from './DisplayRecommendations';
 
 // Custom styled slider for green theme
 const GreenSlider = styled(Slider)(({ theme }) => ({
@@ -17,7 +17,6 @@ const GreenSlider = styled(Slider)(({ theme }) => ({
 }));
 
 const CustomFoodRecommendation = () => {
-  // State to capture custom nutritional inputs
   const [nutritionalValues, setNutritionalValues] = useState({
     calories: 500,
     fatContent: 100,
@@ -30,12 +29,11 @@ const CustomFoodRecommendation = () => {
     proteinContent: 50,
   });
 
-  // States for recommendations and loading spinner
+  const [numberOfMeals, setNumberOfMeals] = useState(3);
   const [recommendations, setRecommendations] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [showRecommendations, setShowRecommendations] = useState(false); // To control when to show recommendations
-  const generatedRecommendations = [];
-  // Handle slider value change
+  const [showRecommendations, setShowRecommendations] = useState(false);
+
   const handleChange = (name, value) => {
     setNutritionalValues({
       ...nutritionalValues,
@@ -43,53 +41,91 @@ const CustomFoodRecommendation = () => {
     });
   };
 
-  // Function to generate custom recommendations based on the input
+  const handleMealNumberChange = (event, newValue) => {
+    setNumberOfMeals(newValue);
+  };
+  const generateRandomOffset = (value, maxValue) => {
+    // Generate a random integer between -10% and +10% of the max value
+    const offsetPercentage = Math.random() * 0.3 - 0.2; // Random value between -0.1 and +0.1
+    return Math.floor(value * offsetPercentage); // Apply the offset
+  };
   const generateRecommendations = async () => {
-    setLoading(true); // Show loading spinner while fetching data
-    setShowRecommendations(false); // Hide recommendations while fetching
+    setLoading(true);
+    setShowRecommendations(false);
+    const generatedRecommendations = [];
+
+
     try {
       const jwtToken = localStorage.getItem("token");
-      const response = await axios.post(
-        "http://localhost:8000/predict", // Assuming this is the same API used in UserForm.js
-        {
-          nutrition_input: Object.values(nutritionalValues), // Sending the custom nutrition values
-          ingredients: [], // Assuming no ingredients input for now
-          params: { n_neighbors: 5, return_distance: false }, // Assuming these are the same parameters
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${jwtToken}`,
+      const meals = getMeals(numberOfMeals);
+      for (const meal of meals) {
+        const modifiedNutritionalValues = Object.keys(nutritionalValues).reduce((acc, key) => {
+          const maxValues = {
+            calories: 500,
+            fatContent: 100,
+            saturatedFatContent: 13,
+            cholesterolContent: 300,
+            sodiumContent: 400,
+            carbohydrateContent: 325,
+            fiberContent: 50,
+            sugarContent: 46,
+            proteinContent: 50,
+          };
+
+          const randomOffset = generateRandomOffset(nutritionalValues[key], maxValues[key]);
+          acc[key] = nutritionalValues[key] + randomOffset; // Add random offset
+          return acc;
+        }, {});
+        const response = await axios.post(
+          "http://localhost:8000/predict",
+          {
+            nutrition_input: Object.values(modifiedNutritionalValues),
+            ingredients: [],
+            params: { n_neighbors: 5, return_distance: false },
           },
-        }
-      );
-      console.log("Hello world")
-      console.log("RESPONSE FROM CUSTOM RECOMMENDATION: ", response.data.output);
-      generatedRecommendations.push(response.data.output);
-      setRecommendations(generatedRecommendations); // Set the recommendations received from the API
-      setShowRecommendations(true); // Show the recommendations after fetching
+          {
+            headers: {
+              Authorization: `Bearer ${jwtToken}`,
+            },
+          }
+        );
+        generatedRecommendations.push(response.data.output);
+      }
+      console.log("RESPONSE FROM CUSTOM RECOMMENDATION: ", generatedRecommendations);
+      setRecommendations(generatedRecommendations);
+      setShowRecommendations(true);
     } catch (error) {
       console.error("Error generating custom recommendations:", error);
     } finally {
-      setLoading(false); // Hide the loading spinner
+      setLoading(false);
     }
+  };
+
+  const getMeals = (number) => {
+    const mealOptions = {
+      3: ["Breakfast", "Lunch", "Dinner"],
+      4: ["Breakfast", "Lunch", "Dinner", "Morning Snack"],
+      5: ["Breakfast", "Lunch", "Dinner", "Morning Snack", "Afternoon Snack"],
+    };
+  
+    return mealOptions[number] || [];
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    generateRecommendations(); // Generate custom recommendations on form submit
+    generateRecommendations();
   };
 
-  // Sliders data for each nutritional parameter
   const slidersData = [
     { label: 'Calories', key: 'calories', min: 0, max: 2000 },
     { label: 'Fat Content', key: 'fatContent', min: 0, max: 100 },
-    { label: 'Saturated Fat Content', key: 'saturatedFatContent', min: 0, max: 100 },
-    { label: 'Cholesterol Content', key: 'cholesterolContent', min: 0, max: 500 },
-    { label: 'Sodium Content', key: 'sodiumContent', min: 0, max: 2000 },
-    { label: 'Carbohydrate Content', key: 'carbohydrateContent', min: 0, max: 500 },
-    { label: 'Fiber Content', key: 'fiberContent', min: 0, max: 100 },
-    { label: 'Sugar Content', key: 'sugarContent', min: 0, max: 100 },
-    { label: 'Protein Content', key: 'proteinContent', min: 0, max: 100 },
+    { label: 'Saturated Fat Content', key: 'saturatedFatContent', min: 0, max: 13 },
+    { label: 'Cholesterol Content', key: 'cholesterolContent', min: 0, max: 300 },
+    { label: 'Sodium Content', key: 'sodiumContent', min: 0, max: 2300 },
+    { label: 'Carbohydrate Content', key: 'carbohydrateContent', min: 0, max: 325 },
+    { label: 'Fiber Content', key: 'fiberContent', min: 0, max: 50 },
+    { label: 'Sugar Content', key: 'sugarContent', min: 0, max: 40 },
+    { label: 'Protein Content', key: 'proteinContent', min: 0, max: 40 },
   ];
 
   return (
@@ -98,14 +134,38 @@ const CustomFoodRecommendation = () => {
         Customize Your Nutritional Values
       </Typography>
 
-      {/* Form for sliders */}
       <form onSubmit={handleSubmit}>
         <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <Box display="flex" flexDirection="column" alignItems="stretch">
+              <Typography
+                variant="body1"
+                style={{ marginBottom: 8, color: 'grey', textAlign: 'left', marginLeft: "1.5em", fontSize: "0.9em" }}>
+                Number of Meals:
+              </Typography>
+              <Box display="flex" alignItems="center" justifyContent="space-between">
+                <Typography variant="caption" style={{ width: '40px' }}>3</Typography>
+                <Box width="100%">
+                  <GreenSlider
+                    value={numberOfMeals}
+                    onChange={handleMealNumberChange}
+                    min={3}
+                    max={5}
+                    step={1}
+                    marks
+                    valueLabelDisplay="auto"
+                  />
+                </Box>
+                <Typography variant="caption" style={{ width: '40px', textAlign: 'right' }}>5</Typography>
+              </Box>
+            </Box>
+          </Grid>
+
           {slidersData.map(({ label, key, min, max }) => (
             <Grid item xs={12} key={key}>
               <Box display="flex" flexDirection="column" alignItems="stretch">
-                <Typography 
-                  variant="body1" 
+                <Typography
+                  variant="body1"
                   style={{ marginBottom: 8, color: 'grey', textAlign: 'left', marginLeft: "1.5em", fontSize: "0.9em" }}>
                   {label}:
                 </Typography>
@@ -144,22 +204,20 @@ const CustomFoodRecommendation = () => {
         </Button>
       </form>
 
-      {/* Show loading spinner when fetching recommendations */}
       {loading && (
         <Box display="flex" justifyContent="center" mt={2}>
           <CircularProgress color="success" />
         </Box>
       )}
 
-      {/* Display recommendations using DisplayRecommendations component */}
       {showRecommendations && recommendations.length > 0 && (
-        <Box mt={2}>
-          <DisplayRecommendations 
+        <Box sx={{ mt: 2, width: '100%' }}>
+          <DisplayRecommendations
             details={{
               recommendations,
-              mealsPerDay: 3, // Example value; replace with actual data if necessary
-              requiredCalories: 3, // Example value; you can adjust as needed
-              meals: ["Breakfast", "Lunch", "Dinner"], // Provide meals names as per your requirements
+              mealsPerDay: numberOfMeals,
+              requiredCalories: nutritionalValues.calories,
+              meals: getMeals(numberOfMeals),
               nutrition: [
                 { id: 'calories', value: nutritionalValues.calories, label: 'Calories' },
                 { id: 'fat', value: nutritionalValues.fatContent, label: 'Fat Content' },
@@ -170,8 +228,8 @@ const CustomFoodRecommendation = () => {
                 { id: 'fiber', value: nutritionalValues.fiberContent, label: 'Fiber Content' },
                 { id: 'sugar', value: nutritionalValues.sugarContent, label: 'Sugar Content' },
                 { id: 'protein', value: nutritionalValues.proteinContent, label: 'Protein Content' },
-              ] // Pass nutrition values as an array of objects
-            }} 
+              ]
+            }}
           />
         </Box>
       )}
