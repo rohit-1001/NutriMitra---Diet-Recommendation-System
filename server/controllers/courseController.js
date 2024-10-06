@@ -75,6 +75,53 @@ const getCourse = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch courses" });
   }
 };
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+
+const createCheckoutSession = async (req, res) => {
+  try {
+    const { id, email, price } = req.body;
+
+    // Create a customer first
+    const customer = await stripe.customers.create({
+      email: email,
+      name: "Test Customer", // In a real app, collect this from the user
+      address: {
+        line1: "123 Test Street",
+        city: "Test City",
+        state: "Test State",
+        postal_code: "123456",
+        country: "IN",
+      },
+    });
+
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price_data: {
+            currency: 'inr',
+            product_data: {
+              name: 'Course Purchase',
+            },
+            unit_amount: price * 100, // Stripe expects the amount in cents
+          },
+          quantity: 1,
+        },
+      ],
+      mode: 'payment',
+      success_url: `${process.env.CLIENT_URL}/learn`,
+      cancel_url: `${process.env.CLIENT_URL}/learn`,
+      client_reference_id: id,
+      customer: customer.id,
+      billing_address_collection: 'required',
+    });
+
+    res.status(200).json({ id: session.id });
+  } catch (error) {
+    console.error('Stripe error:', error);
+    res.status(500).json({ error: error.message });
+  }
+};
 
 const buyCourse = async (req, res) => {
   try {
@@ -83,7 +130,7 @@ const buyCourse = async (req, res) => {
     await buyCourse.save();
 
     const addMoney = await CourseMoney.findOne({ email: email });
-    if(addMoney){
+    if (addMoney) {
       await CourseMoney.findOneAndUpdate(
         { email: email },
         { $inc: { money: money } }
@@ -100,7 +147,7 @@ const buyCourse = async (req, res) => {
 
 const getMyCourses = async (req, res) => {
   try {
-    const {email} = req.body;
+    const { email } = req.body;
     const myCourses = await BuyCourse.find({ email: email });
     let myCoursesInfo = [];
     for (let i = 0; i < myCourses.length; i++) {
@@ -113,19 +160,20 @@ const getMyCourses = async (req, res) => {
 };
 
 const getCourseVideos = async (req, res) => {
-    try {
-      const { course_id } = req.body;
-      const videos = await Video.find({ id : course_id}) 
-        .sort({ ind: 1 })
-        .select('video');
-      res.status(200).json({ videos: videos });
-    } catch (error) {
-      res.status(500).json({ error: "Failed to fetch videos" });
-    }
-  };
-  
+  try {
+    const { course_id } = req.body;
+    const videos = await Video.find({ id: course_id })
+      .sort({ ind: 1 })
+      .select('video');
+    res.status(200).json({ videos: videos });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch videos" });
+  }
+};
+
 
 module.exports = {
+  createCheckoutSession,
   createCourse,
   getCourse,
   buyCourse,

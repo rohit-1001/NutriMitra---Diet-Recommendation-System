@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { Slider, Box, Typography, Button, Grid, CircularProgress } from '@mui/material';
+import { Slider, Box, Typography, Button, Grid, CircularProgress, TextField } from '@mui/material';
 import { styled } from '@mui/system';
 import DisplayRecommendations from './DisplayRecommendations';
 
@@ -18,21 +18,22 @@ const GreenSlider = styled(Slider)(({ theme }) => ({
 
 const CustomFoodRecommendation = () => {
   const [nutritionalValues, setNutritionalValues] = useState({
-    calories: 500,
-    fatContent: 100,
-    saturatedFatContent: 13,
-    cholesterolContent: 300,
-    sodiumContent: 400,
-    carbohydrateContent: 325,
-    fiberContent: 50,
-    sugarContent: 46,
-    proteinContent: 50,
+    calories: 1000,
+    fatContent: 50,
+    saturatedFatContent: 6,
+    cholesterolContent: 150,
+    sodiumContent: 1100,
+    carbohydrateContent: 160,
+    fiberContent: 25,
+    sugarContent: 23,
+    proteinContent: 25,
   });
 
   const [numberOfMeals, setNumberOfMeals] = useState(3);
   const [recommendations, setRecommendations] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showRecommendations, setShowRecommendations] = useState(false);
+  const [ingredients, setIngredients] = useState("");
 
   const handleChange = (name, value) => {
     setNutritionalValues({
@@ -44,20 +45,26 @@ const CustomFoodRecommendation = () => {
   const handleMealNumberChange = (event, newValue) => {
     setNumberOfMeals(newValue);
   };
-  const generateRandomOffset = (value, maxValue) => {
-    // Generate a random integer between -10% and +10% of the max value
-    const offsetPercentage = Math.random() * 0.3 - 0.2; // Random value between -0.1 and +0.1
-    return Math.floor(value * offsetPercentage); // Apply the offset
+
+  const handleIngredientsChange = (event) => {
+    setIngredients(event.target.value);
   };
+
+  const generateRandomOffset = (value, maxValue) => {
+    const offsetPercentage = Math.random() * 0.3 - 0.2;
+    return Math.floor(value * offsetPercentage);
+  };
+
   const generateRecommendations = async () => {
     setLoading(true);
     setShowRecommendations(false);
     const generatedRecommendations = [];
 
-
     try {
       const jwtToken = localStorage.getItem("token");
       const meals = getMeals(numberOfMeals);
+      const ingredientsList = ingredients.split(',').map(item => item.trim());
+
       for (const meal of meals) {
         const modifiedNutritionalValues = Object.keys(nutritionalValues).reduce((acc, key) => {
           const maxValues = {
@@ -73,14 +80,15 @@ const CustomFoodRecommendation = () => {
           };
 
           const randomOffset = generateRandomOffset(nutritionalValues[key], maxValues[key]);
-          acc[key] = nutritionalValues[key] + randomOffset; // Add random offset
+          acc[key] = nutritionalValues[key] + randomOffset;
           return acc;
         }, {});
+
         const response = await axios.post(
           "http://localhost:8000/predict",
           {
             nutrition_input: Object.values(modifiedNutritionalValues),
-            ingredients: [],
+            ingredients: ingredientsList,
             params: { n_neighbors: 5, return_distance: false },
           },
           {
@@ -107,7 +115,7 @@ const CustomFoodRecommendation = () => {
       4: ["Breakfast", "Lunch", "Dinner", "Morning Snack"],
       5: ["Breakfast", "Lunch", "Dinner", "Morning Snack", "Afternoon Snack"],
     };
-  
+
     return mealOptions[number] || [];
   };
 
@@ -187,7 +195,16 @@ const CustomFoodRecommendation = () => {
             </Grid>
           ))}
         </Grid>
-
+        <Grid item xs={12}>
+          <TextField
+            fullWidth
+            label="Enter ingredients (comma separated)"
+            variant="outlined"
+            value={ingredients}
+            onChange={handleIngredientsChange}
+            placeholder="e.g. tomato, chicken, rice"
+          />
+        </Grid>
         <Button
           type="submit"
           variant="contained"
