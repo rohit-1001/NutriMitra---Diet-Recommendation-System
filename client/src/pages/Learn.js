@@ -15,7 +15,6 @@ import NavigationIcon from "@mui/icons-material/Navigation";
 import AddCourseModal from "../components/AddCourseModal";
 import { NavLink } from "react-router-dom";
 import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
-
 import { loadStripe } from "@stripe/stripe-js";
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 function CustomTabPanel(props) {
@@ -51,10 +50,12 @@ const Learn = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
     window.document.title = "Learn | NutriMitra";
+
     const role = localStorage.getItem("role");
-    if (role == "expert") {
+    if (role === "expert") {
       setMakeCreateCourseButtonVisible(true);
     }
+
     getAllCourses();
   }, []);
 
@@ -196,51 +197,48 @@ const Learn = () => {
     }
     return false;
   };
+
   const handleBuyCourse = async (course) => {
     if (checkBought(course)) {
-      console.log("123")
       return;
     }
-
-    try {
-      const stripe = await stripePromise;
-      const token = localStorage.getItem("token");
-      const email = localStorage.getItem("email");
-      console.log("LOG 1")
-      // Create a checkout session on the server
-      const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/createCheckoutSession`,
-        {
-          id: course._id,
-          email: email,
-          price: course.price,
-        },
-        {
-          headers: {
-            Authorization: "Bearer " + token,
-          },
-        }
-      );
-      console.log("LOG 2")
-      const session = response.data;
-      console.log(session)
-      // Redirect to Stripe Checkout
-      const result = await stripe.redirectToCheckout({
-        sessionId: session.id,
-      });
-
-      buyCourse(course);
-      
-    } catch (error) {
-      if (error.response && error.response.data) {
-        toast.error(error.response.data.error);
-      } else {
-        toast.error("An error occurred during checkout");
-      }
-    }
+    buyCourse(course);
+    // try {
+    //   const stripe = await stripePromise;
+    //   const token = localStorage.getItem("token");
+    //   const email = localStorage.getItem("email");
+    //   // Create a checkout session on the server
+    //   const response = await axios.post(
+    //     `${process.env.REACT_APP_BACKEND_URL}/createCheckoutSession`,
+    //     {
+    //       id: course._id,
+    //       email: email,
+    //       money: course.price,
+    //     },
+    //     {
+    //       headers: {
+    //         Authorization: "Bearer " + token,
+    //       },
+    //     }
+    //   );
+    //   const session = response.data;
+    //   // Redirect to Stripe Checkout
+    //   const result = await stripe.redirectToCheckout({
+    //     sessionId: session.id,
+    //   });
+    // } catch (error) {
+    //   if (error.response && error.response.data) {
+    //     toast.error(error.response.data.error);
+    //   } else {
+    //     toast.error("An error occurred during checkout");
+    //   }
+    // }
   };
 
   const buyCourse = async (course) => {
+    if (checkBought(course)) {
+      return;
+    }
     try {
       const token = localStorage.getItem("token");
       const email = localStorage.getItem("email");
@@ -505,12 +503,12 @@ const Learn = () => {
                   style={styles.card}
                   onClick={() => handleCardClick(course)}
                   onMouseEnter={(e) =>
-                  (e.currentTarget.style.boxShadow =
-                    "0 8px 16px rgba(0, 0, 0, 0.2)")
+                    (e.currentTarget.style.boxShadow =
+                      "0 8px 16px rgba(0, 0, 0, 0.2)")
                   }
                   onMouseLeave={(e) =>
-                  (e.currentTarget.style.boxShadow =
-                    "0 4px 8px rgba(0, 0, 0, 0.1)")
+                    (e.currentTarget.style.boxShadow =
+                      "0 4px 8px rgba(0, 0, 0, 0.1)")
                   }
                 >
                   <img
@@ -648,34 +646,34 @@ const Learn = () => {
               {mycourses.length === 0
                 ? noCourseLine
                 : mycourses.map((course, index) => (
-                  <div
-                    key={index}
-                    style={styles.card}
-                    onClick={() => handleCardClick1(course)}
-                    onMouseEnter={(e) =>
-                    (e.currentTarget.style.boxShadow =
-                      "0 8px 16px rgba(0, 0, 0, 0.2)")
-                    }
-                    onMouseLeave={(e) =>
-                    (e.currentTarget.style.boxShadow =
-                      "0 4px 8px rgba(0, 0, 0, 0.1)")
-                    }
-                  >
-                    <img
-                      src={course.image}
-                      alt={course.title}
-                      style={styles.cardImage}
-                    />
-                    <h3 style={styles.cardTitle}>{course.title}</h3>
-                    <p style={styles.description}>
-                      {truncateDescription(course.description, 20)}
-                    </p>
-                    <p style={styles.price}>
-                      <strong>Price:</strong> {`\u20B9`}
-                      {course.price}
-                    </p>
-                  </div>
-                ))}
+                    <div
+                      key={index}
+                      style={styles.card}
+                      onClick={() => handleCardClick1(course)}
+                      onMouseEnter={(e) =>
+                        (e.currentTarget.style.boxShadow =
+                          "0 8px 16px rgba(0, 0, 0, 0.2)")
+                      }
+                      onMouseLeave={(e) =>
+                        (e.currentTarget.style.boxShadow =
+                          "0 4px 8px rgba(0, 0, 0, 0.1)")
+                      }
+                    >
+                      <img
+                        src={course.image}
+                        alt={course.title}
+                        style={styles.cardImage}
+                      />
+                      <h3 style={styles.cardTitle}>{course.title}</h3>
+                      <p style={styles.description}>
+                        {truncateDescription(course.description, 20)}
+                      </p>
+                      <p style={styles.price}>
+                        <strong>Price:</strong> {`\u20B9`}
+                        {course.price}
+                      </p>
+                    </div>
+                  ))}
             </div>
 
             {/* Modal for detailed course info */}

@@ -79,7 +79,7 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const createCheckoutSession = async (req, res) => {
   try {
-    const { id, email, price } = req.body;
+    const { id, email, money } = req.body;
 
     // Create a customer first
     const customer = await stripe.customers.create({
@@ -103,7 +103,7 @@ const createCheckoutSession = async (req, res) => {
             product_data: {
               name: 'Course Purchase',
             },
-            unit_amount: price * 100, // Stripe expects the amount in cents
+            unit_amount: money * 100, // Stripe expects the amount in cents
           },
           quantity: 1,
         },
@@ -128,7 +128,6 @@ const buyCourse = async (req, res) => {
     const { id, email, money } = req.body;
     const buyCourse = new BuyCourse({ id, email });
     await buyCourse.save();
-
     const addMoney = await CourseMoney.findOne({ email: email });
     if (addMoney) {
       await CourseMoney.findOneAndUpdate(

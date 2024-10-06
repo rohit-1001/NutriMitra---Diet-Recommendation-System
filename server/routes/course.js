@@ -12,6 +12,7 @@ router.post('/buyCourse', authenticate, buyCourse);
 router.post('/getMyCourses', authenticate, getMyCourses);
 
 router.post('/getCourseVideos', authenticate, getCourseVideos);
+
 router.post('/createCheckoutSession', authenticate, createCheckoutSession);
 
 
