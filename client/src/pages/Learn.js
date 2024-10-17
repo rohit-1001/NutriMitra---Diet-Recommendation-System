@@ -119,7 +119,7 @@ const Learn = () => {
               fontFamily: "Arial, sans-serif",
             }}
           >
-            No courses purchased yet <DynamicEmoji />
+            No playlist purchased yet <DynamicEmoji />
           </h2>
         );
       } else if (role === "expert") {
@@ -133,7 +133,7 @@ const Learn = () => {
               fontFamily: "Arial, sans-serif",
             }}
           >
-            No courses created yet <DynamicEmoji />
+            No playlist created yet <DynamicEmoji />
           </h2>
         );
       }
@@ -434,7 +434,7 @@ const Learn = () => {
                 overflow: "hidden",
               }}
             >
-              {isHovered ? "Create Course" : ""}
+              {isHovered ? "Create Playlist" : ""}
             </span>
 
             {/* The Floating Button */}
@@ -488,8 +488,8 @@ const Learn = () => {
             }}
             aria-label="basic tabs example"
           >
-            <Tab label="All Courses" {...a11yProps(0)} />
-            <Tab label="My Courses" {...a11yProps(1)} />
+            <Tab label="All Playlists" {...a11yProps(0)} />
+            <Tab label="My Playlists" {...a11yProps(1)} />
           </Tabs>
         </Box>
 
