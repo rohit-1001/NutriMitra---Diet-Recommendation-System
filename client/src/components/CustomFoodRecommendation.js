@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Slider, Box, Typography, Button, Grid, CircularProgress, TextField } from '@mui/material';
+import Papa from 'papaparse';
+import { Slider, Box, Typography, Button, Grid, CircularProgress, TextField, Autocomplete } from '@mui/material';
 import { styled } from '@mui/system';
 import DisplayRecommendations from './DisplayRecommendations';
 
@@ -17,6 +18,7 @@ const GreenSlider = styled(Slider)(({ theme }) => ({
 }));
 
 const CustomFoodRecommendation = () => {
+  const [diseaseIngredients, setDiseaseIngredients] = useState({});
   const [nutritionalValues, setNutritionalValues] = useState({
     calories: 1000,
     fatContent: 50,
@@ -34,7 +36,59 @@ const CustomFoodRecommendation = () => {
   const [loading, setLoading] = useState(false);
   const [showRecommendations, setShowRecommendations] = useState(false);
   const [ingredients, setIngredients] = useState("");
+  const [selectedDisease, setSelectedDisease] = useState(null);
 
+  // Load disease ingredients from CSV
+  useEffect(() => {
+    const loadDiseaseData = () => {
+      Papa.parse('DiseaseIngredientconnect.csv', {
+        download: true,
+        header: true,
+        complete: (results) => {
+          const formattedData = results.data.reduce((acc, row) => {
+            if (row.Disease && row.Ingredients) {
+              // Split ingredients and clean them
+              const ingredientsList = row.Ingredients.split(',')
+                .map(ingredient => 
+                  ingredient.trim()
+                    .replace(/\(.*?\)/g, '') // Remove parenthetical content
+                    .trim()
+                );
+              
+              acc[row.Disease] = ingredientsList;
+            }
+            return acc;
+          }, {});
+          
+          setDiseaseIngredients(formattedData);
+        },
+        error: (error) => {
+          console.error("CSV Parsing Error:", error);
+        }
+      });
+    };
+
+    loadDiseaseData();
+  }, []);
+  const filterRecommendationsByDisease = (recommendations, disease) => {
+    if (!disease) return recommendations;
+  
+    const restrictedIngredients = diseaseIngredients[disease] || [];
+    
+    return recommendations.map(mealRecommendations => 
+      mealRecommendations.filter(recipe => {
+        // Use RecipeIngredientParts instead of ingredients
+        const recipeIngredients = recipe.RecipeIngredientParts || [];
+        
+        // Check if any restricted ingredient is in the recipe ingredients
+        return !restrictedIngredients.some(restrictedItem => 
+          recipeIngredients.some(recipeIngredient => 
+            recipeIngredient.toLowerCase().includes(restrictedItem.toLowerCase())
+          )
+        );
+      })
+    );
+  };
   const handleChange = (name, value) => {
     setNutritionalValues({
       ...nutritionalValues,
@@ -59,12 +113,12 @@ const CustomFoodRecommendation = () => {
     setLoading(true);
     setShowRecommendations(false);
     const generatedRecommendations = [];
-
+  
     try {
       const jwtToken = localStorage.getItem("token");
       const meals = getMeals(numberOfMeals);
       const ingredientsList = ingredients.split(',').map(item => item.trim());
-
+  
       for (const meal of meals) {
         const modifiedNutritionalValues = Object.keys(nutritionalValues).reduce((acc, key) => {
           const maxValues = {
@@ -78,12 +132,12 @@ const CustomFoodRecommendation = () => {
             sugarContent: 46,
             proteinContent: 50,
           };
-
+  
           const randomOffset = generateRandomOffset(nutritionalValues[key], maxValues[key]);
           acc[key] = nutritionalValues[key] + randomOffset;
           return acc;
         }, {});
-
+  
         const response = await axios.post(
           "http://localhost:8000/predict",
           {
@@ -97,17 +151,32 @@ const CustomFoodRecommendation = () => {
             },
           }
         );
-        generatedRecommendations.push(response.data.output);
+        
+        // Ensure the output is an array
+        const output = Array.isArray(response.data.output) 
+          ? response.data.output 
+          : [response.data.output];
+        
+        generatedRecommendations.push(output);
       }
-      console.log("RESPONSE FROM CUSTOM RECOMMENDATION: ", generatedRecommendations);
-      setRecommendations(generatedRecommendations);
+  
+      // Filter recommendations based on selected disease
+      const filteredRecommendations = filterRecommendationsByDisease(
+        generatedRecommendations, 
+        selectedDisease
+      );
+  
+      setRecommendations(filteredRecommendations);
       setShowRecommendations(true);
     } catch (error) {
       console.error("Error generating custom recommendations:", error);
+      alert("Failed to generate recommendations. Please try again.");
     } finally {
       setLoading(false);
     }
   };
+
+  const diseaseOptions = Object.keys(diseaseIngredients);
 
   const getMeals = (number) => {
     const mealOptions = {
@@ -205,6 +274,20 @@ const CustomFoodRecommendation = () => {
             placeholder="e.g. tomato, chicken, rice"
           />
         </Grid>
+        <Grid item xs={12}>
+        <Autocomplete
+          options={diseaseOptions}
+          value={selectedDisease}
+          onChange={(event, newValue) => setSelectedDisease(newValue)}
+          renderInput={(params) => (
+            <TextField 
+              {...params} 
+              label="Select Disease (Optional)" 
+              variant="outlined" 
+            />
+          )}
+        />
+      </Grid>
         <Button
           type="submit"
           variant="contained"

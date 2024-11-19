@@ -25,6 +25,7 @@
     "dotenv": "^16.4.4",
     "dotenv-webpack": "^8.0.1",
     "mongoose": "^8.1.2",
+    "papaparse": "^5.4.1",
     "path-browserify": "^1.0.1",
     "react": "^18.2.0",
     "react-awesome-reveal": "^4.2.8",
