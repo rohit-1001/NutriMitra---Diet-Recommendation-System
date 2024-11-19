@@ -12,7 +12,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { NavLink } from "react-router-dom";
 
-const steps = ["Course Details", "Upload Content", "Preview"];
+const steps = ["Playlist Details", "Upload Content", "Preview"];
 
 const CourseModal = ({ onClose }) => {
   const [activeStep, setActiveStep] = useState(0);
@@ -58,7 +58,7 @@ const CourseModal = ({ onClose }) => {
         }
       );
       if (res.status === 200) {
-        toast.success("Course created successfully!");
+        toast.success("Playlist created successfully!");
         onClose();
       } else if (res.status === 400) {
         toast.error(res.data.error);
@@ -688,7 +688,7 @@ const CourseModal = ({ onClose }) => {
             marginBottom: "20px",
           }}
         >
-          Add New Course
+          Add New Playlist
         </h2>
         <Box sx={{ width: "100%" }}>
           <Stepper

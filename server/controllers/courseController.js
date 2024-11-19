@@ -154,7 +154,7 @@ const getMyCourses = async (req, res) => {
     }
     res.status(200).json({ myCourses: myCoursesInfo });
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch courses" });
+    res.status(500).json({ error: "Failed to fetch playlists" });
   }
 };
 
