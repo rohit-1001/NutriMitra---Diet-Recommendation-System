@@ -1,19 +1,28 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import Papa from 'papaparse';
-import { Slider, Box, Typography, Button, Grid, CircularProgress, TextField, Autocomplete } from '@mui/material';
-import { styled } from '@mui/system';
-import DisplayRecommendations from './DisplayRecommendations';
+import Papa from "papaparse";
+import {
+  Slider,
+  Box,
+  Typography,
+  Button,
+  Grid,
+  CircularProgress,
+  TextField,
+  Autocomplete,
+} from "@mui/material";
+import { styled } from "@mui/system";
+import DisplayRecommendations from "./DisplayRecommendations";
 
 // Custom styled slider for green theme
 const GreenSlider = styled(Slider)(({ theme }) => ({
-  color: 'green',
-  '& .MuiSlider-thumb': {
-    backgroundColor: 'white',
-    border: '2px solid green',
+  color: "green",
+  "& .MuiSlider-thumb": {
+    backgroundColor: "white",
+    border: "2px solid green",
   },
-  '& .MuiSlider-track': {
-    backgroundColor: 'green',
+  "& .MuiSlider-track": {
+    backgroundColor: "green",
   },
 }));
 
@@ -41,30 +50,31 @@ const CustomFoodRecommendation = () => {
   // Load disease ingredients from CSV
   useEffect(() => {
     const loadDiseaseData = () => {
-      Papa.parse('DiseaseIngredientconnect.csv', {
+      Papa.parse("DiseaseIngredientconnect.csv", {
         download: true,
         header: true,
         complete: (results) => {
           const formattedData = results.data.reduce((acc, row) => {
             if (row.Disease && row.Ingredients) {
               // Split ingredients and clean them
-              const ingredientsList = row.Ingredients.split(',')
-                .map(ingredient => 
-                  ingredient.trim()
-                    .replace(/\(.*?\)/g, '') // Remove parenthetical content
+              const ingredientsList = row.Ingredients.split(",").map(
+                (ingredient) =>
+                  ingredient
                     .trim()
-                );
-              
+                    .replace(/\(.*?\)/g, "") // Remove parenthetical content
+                    .trim()
+              );
+
               acc[row.Disease] = ingredientsList;
             }
             return acc;
           }, {});
-          
+
           setDiseaseIngredients(formattedData);
         },
         error: (error) => {
           console.error("CSV Parsing Error:", error);
-        }
+        },
       });
     };
 
@@ -72,18 +82,20 @@ const CustomFoodRecommendation = () => {
   }, []);
   const filterRecommendationsByDisease = (recommendations, disease) => {
     if (!disease) return recommendations;
-  
+
     const restrictedIngredients = diseaseIngredients[disease] || [];
-    
-    return recommendations.map(mealRecommendations => 
-      mealRecommendations.filter(recipe => {
+
+    return recommendations.map((mealRecommendations) =>
+      mealRecommendations.filter((recipe) => {
         // Use RecipeIngredientParts instead of ingredients
         const recipeIngredients = recipe.RecipeIngredientParts || [];
-        
+
         // Check if any restricted ingredient is in the recipe ingredients
-        return !restrictedIngredients.some(restrictedItem => 
-          recipeIngredients.some(recipeIngredient => 
-            recipeIngredient.toLowerCase().includes(restrictedItem.toLowerCase())
+        return !restrictedIngredients.some((restrictedItem) =>
+          recipeIngredients.some((recipeIngredient) =>
+            recipeIngredient
+              .toLowerCase()
+              .includes(restrictedItem.toLowerCase())
           )
         );
       })
@@ -113,31 +125,37 @@ const CustomFoodRecommendation = () => {
     setLoading(true);
     setShowRecommendations(false);
     const generatedRecommendations = [];
-  
+
     try {
       const jwtToken = localStorage.getItem("token");
       const meals = getMeals(numberOfMeals);
-      const ingredientsList = ingredients.split(',').map(item => item.trim());
-  
+      const ingredientsList = ingredients.split(",").map((item) => item.trim());
+
       for (const meal of meals) {
-        const modifiedNutritionalValues = Object.keys(nutritionalValues).reduce((acc, key) => {
-          const maxValues = {
-            calories: 500,
-            fatContent: 100,
-            saturatedFatContent: 13,
-            cholesterolContent: 300,
-            sodiumContent: 400,
-            carbohydrateContent: 325,
-            fiberContent: 50,
-            sugarContent: 46,
-            proteinContent: 50,
-          };
-  
-          const randomOffset = generateRandomOffset(nutritionalValues[key], maxValues[key]);
-          acc[key] = nutritionalValues[key] + randomOffset;
-          return acc;
-        }, {});
-  
+        const modifiedNutritionalValues = Object.keys(nutritionalValues).reduce(
+          (acc, key) => {
+            const maxValues = {
+              calories: 500,
+              fatContent: 100,
+              saturatedFatContent: 13,
+              cholesterolContent: 300,
+              sodiumContent: 400,
+              carbohydrateContent: 325,
+              fiberContent: 50,
+              sugarContent: 46,
+              proteinContent: 50,
+            };
+
+            const randomOffset = generateRandomOffset(
+              nutritionalValues[key],
+              maxValues[key]
+            );
+            acc[key] = nutritionalValues[key] + randomOffset;
+            return acc;
+          },
+          {}
+        );
+
         const response = await axios.post(
           "http://localhost:8000/predict",
           {
@@ -151,21 +169,21 @@ const CustomFoodRecommendation = () => {
             },
           }
         );
-        
+
         // Ensure the output is an array
-        const output = Array.isArray(response.data.output) 
-          ? response.data.output 
+        const output = Array.isArray(response.data.output)
+          ? response.data.output
           : [response.data.output];
-        
+
         generatedRecommendations.push(output);
       }
-  
+
       // Filter recommendations based on selected disease
       const filteredRecommendations = filterRecommendationsByDisease(
-        generatedRecommendations, 
+        generatedRecommendations,
         selectedDisease
       );
-  
+
       setRecommendations(filteredRecommendations);
       setShowRecommendations(true);
     } catch (error) {
@@ -194,15 +212,30 @@ const CustomFoodRecommendation = () => {
   };
 
   const slidersData = [
-    { label: 'Calories', key: 'calories', min: 0, max: 2000 },
-    { label: 'Fat Content', key: 'fatContent', min: 0, max: 100 },
-    { label: 'Saturated Fat Content', key: 'saturatedFatContent', min: 0, max: 13 },
-    { label: 'Cholesterol Content', key: 'cholesterolContent', min: 0, max: 300 },
-    { label: 'Sodium Content', key: 'sodiumContent', min: 0, max: 2300 },
-    { label: 'Carbohydrate Content', key: 'carbohydrateContent', min: 0, max: 325 },
-    { label: 'Fiber Content', key: 'fiberContent', min: 0, max: 50 },
-    { label: 'Sugar Content', key: 'sugarContent', min: 0, max: 40 },
-    { label: 'Protein Content', key: 'proteinContent', min: 0, max: 40 },
+    { label: "Calories", key: "calories", min: 0, max: 2000 },
+    { label: "Fat Content", key: "fatContent", min: 0, max: 100 },
+    {
+      label: "Saturated Fat Content",
+      key: "saturatedFatContent",
+      min: 0,
+      max: 13,
+    },
+    {
+      label: "Cholesterol Content",
+      key: "cholesterolContent",
+      min: 0,
+      max: 300,
+    },
+    { label: "Sodium Content", key: "sodiumContent", min: 0, max: 2300 },
+    {
+      label: "Carbohydrate Content",
+      key: "carbohydrateContent",
+      min: 0,
+      max: 325,
+    },
+    { label: "Fiber Content", key: "fiberContent", min: 0, max: 50 },
+    { label: "Sugar Content", key: "sugarContent", min: 0, max: 40 },
+    { label: "Protein Content", key: "proteinContent", min: 0, max: 40 },
   ];
 
   return (
@@ -217,11 +250,24 @@ const CustomFoodRecommendation = () => {
             <Box display="flex" flexDirection="column" alignItems="stretch">
               <Typography
                 variant="body1"
-                style={{ marginBottom: 8, color: 'grey', textAlign: 'left', marginLeft: "1.5em", fontSize: "0.9em" }}>
+                style={{
+                  marginBottom: 8,
+                  color: "grey",
+                  textAlign: "left",
+                  marginLeft: "1.5em",
+                  fontSize: "0.9em",
+                }}
+              >
                 Number of Meals:
               </Typography>
-              <Box display="flex" alignItems="center" justifyContent="space-between">
-                <Typography variant="caption" style={{ width: '40px' }}>3</Typography>
+              <Box
+                display="flex"
+                alignItems="center"
+                justifyContent="space-between"
+              >
+                <Typography variant="caption" style={{ width: "40px" }}>
+                  3
+                </Typography>
                 <Box width="100%">
                   <GreenSlider
                     value={numberOfMeals}
@@ -233,7 +279,12 @@ const CustomFoodRecommendation = () => {
                     valueLabelDisplay="auto"
                   />
                 </Box>
-                <Typography variant="caption" style={{ width: '40px', textAlign: 'right' }}>5</Typography>
+                <Typography
+                  variant="caption"
+                  style={{ width: "40px", textAlign: "right" }}
+                >
+                  5
+                </Typography>
               </Box>
             </Box>
           </Grid>
@@ -243,51 +294,109 @@ const CustomFoodRecommendation = () => {
               <Box display="flex" flexDirection="column" alignItems="stretch">
                 <Typography
                   variant="body1"
-                  style={{ marginBottom: 8, color: 'grey', textAlign: 'left', marginLeft: "1.5em", fontSize: "0.9em" }}>
+                  style={{
+                    marginBottom: 8,
+                    color: "grey",
+                    textAlign: "left",
+                    marginLeft: "1.5em",
+                    fontSize: "0.9em",
+                  }}
+                >
                   {label}:
                 </Typography>
-                <Box display="flex" alignItems="center" justifyContent="space-between">
-                  <Typography variant="caption" style={{ width: '40px' }}>{min}</Typography>
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="space-between"
+                >
+                  <Typography variant="caption" style={{ width: "40px" }}>
+                    {min}
+                  </Typography>
                   <Box width="100%">
                     <GreenSlider
                       value={nutritionalValues[key]}
-                      onChange={(event, newValue) => handleChange(key, newValue)}
+                      onChange={(event, newValue) =>
+                        handleChange(key, newValue)
+                      }
                       min={min}
                       max={max}
                       step={1}
                       valueLabelDisplay="auto"
                     />
                   </Box>
-                  <Typography variant="caption" style={{ width: '40px', textAlign: 'right' }}>{max}</Typography>
+                  <Typography
+                    variant="caption"
+                    style={{ width: "40px", textAlign: "right" }}
+                  >
+                    {max}
+                  </Typography>
                 </Box>
               </Box>
             </Grid>
           ))}
         </Grid>
-        <Grid item xs={12}>
+
+        <Grid
+          item
+          xs={12}
+          sx={{
+            marginBottom: 2,
+            marginLeft: 2,
+            marginTop: 2,
+            width: "530px",
+          }}
+        >
           <TextField
             fullWidth
-            label="Enter ingredients (comma separated)"
+            label="Enter ingredients to include (comma separated) [Optional]"
             variant="outlined"
             value={ingredients}
             onChange={handleIngredientsChange}
             placeholder="e.g. tomato, chicken, rice"
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                "&.Mui-focused fieldset": {
+                  borderColor: "green",
+                },
+              },
+              "& .MuiInputLabel-root.Mui-focused": {
+                color: "green",
+              },
+            }}
           />
         </Grid>
-        <Grid item xs={12}>
-        <Autocomplete
-          options={diseaseOptions}
-          value={selectedDisease}
-          onChange={(event, newValue) => setSelectedDisease(newValue)}
-          renderInput={(params) => (
-            <TextField 
-              {...params} 
-              label="Select Disease (Optional)" 
-              variant="outlined" 
-            />
-          )}
-        />
-      </Grid>
+        <Grid
+          item
+          xs={12}
+          sx={{
+            marginBottom: 2,
+            marginLeft: 2,
+            width: "530px",
+          }}
+        >
+          <Autocomplete
+            options={diseaseOptions}
+            value={selectedDisease}
+            onChange={(event, newValue) => setSelectedDisease(newValue)}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Select Disease [Optional]"
+                variant="outlined"
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    "&.Mui-focused fieldset": {
+                      borderColor: "green",
+                    },
+                  },
+                  "& .MuiInputLabel-root.Mui-focused": {
+                    color: "green",
+                  },
+                }}
+              />
+            )}
+          />
+        </Grid>
         <Button
           type="submit"
           variant="contained"
@@ -311,7 +420,7 @@ const CustomFoodRecommendation = () => {
       )}
 
       {showRecommendations && recommendations.length > 0 && (
-        <Box sx={{ mt: 2, width: '100%' }}>
+        <Box sx={{ mt: 2, width: "100%" }}>
           <DisplayRecommendations
             details={{
               recommendations,
@@ -319,16 +428,52 @@ const CustomFoodRecommendation = () => {
               requiredCalories: nutritionalValues.calories,
               meals: getMeals(numberOfMeals),
               nutrition: [
-                { id: 'calories', value: nutritionalValues.calories, label: 'Calories' },
-                { id: 'fat', value: nutritionalValues.fatContent, label: 'Fat Content' },
-                { id: 'saturatedFat', value: nutritionalValues.saturatedFatContent, label: 'Saturated Fat Content' },
-                { id: 'cholesterol', value: nutritionalValues.cholesterolContent, label: 'Cholesterol Content' },
-                { id: 'sodium', value: nutritionalValues.sodiumContent, label: 'Sodium Content' },
-                { id: 'carbohydrate', value: nutritionalValues.carbohydrateContent, label: 'Carbohydrate Content' },
-                { id: 'fiber', value: nutritionalValues.fiberContent, label: 'Fiber Content' },
-                { id: 'sugar', value: nutritionalValues.sugarContent, label: 'Sugar Content' },
-                { id: 'protein', value: nutritionalValues.proteinContent, label: 'Protein Content' },
-              ]
+                {
+                  id: "calories",
+                  value: nutritionalValues.calories,
+                  label: "Calories",
+                },
+                {
+                  id: "fat",
+                  value: nutritionalValues.fatContent,
+                  label: "Fat Content",
+                },
+                {
+                  id: "saturatedFat",
+                  value: nutritionalValues.saturatedFatContent,
+                  label: "Saturated Fat Content",
+                },
+                {
+                  id: "cholesterol",
+                  value: nutritionalValues.cholesterolContent,
+                  label: "Cholesterol Content",
+                },
+                {
+                  id: "sodium",
+                  value: nutritionalValues.sodiumContent,
+                  label: "Sodium Content",
+                },
+                {
+                  id: "carbohydrate",
+                  value: nutritionalValues.carbohydrateContent,
+                  label: "Carbohydrate Content",
+                },
+                {
+                  id: "fiber",
+                  value: nutritionalValues.fiberContent,
+                  label: "Fiber Content",
+                },
+                {
+                  id: "sugar",
+                  value: nutritionalValues.sugarContent,
+                  label: "Sugar Content",
+                },
+                {
+                  id: "protein",
+                  value: nutritionalValues.proteinContent,
+                  label: "Protein Content",
+                },
+              ],
             }}
           />
         </Box>
